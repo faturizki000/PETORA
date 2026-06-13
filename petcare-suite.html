@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetCare Suite — Veterinary Management Platform</title>
+<style>
+  /* ===== DESIGN TOKENS ===== */
+  :root {
+    --teal-dark: #0a5c52;
+    --teal: #0d7a6d;
+    --teal-light: #14a394;
+    --teal-pale: #e8f7f5;
+    --teal-xpale: #f3fbfa;
+    --sand: #f7f4ee;
+    --sand-dark: #ede8de;
+    --bark: #8b6f4e;
+    --bark-light: #c4a882;
+    --ink: #1a1a1a;
+    --ink-mid: #3d3d3d;
+    --ink-soft: #6b6b6b;
+    --ink-muted: #9a9a9a;
+    --white: #ffffff;
+    --danger: #c0392b;
+    --danger-light: #fdf0ef;
+    --warn: #e67e22;
+    --warn-light: #fef6ec;
+    --success: #27ae60;
+    --success-light: #edfbf3;
+    --info: #2980b9;
+    --info-light: #eef5fd;
+    --border: #e2ddd6;
+    --border-light: #f0ece6;
+    --radius: 8px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+    --sidebar-w: 240px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 15px; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--sand); color: var(--ink); min-height: 100vh; }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ===== PUBLIC PAGES ===== */
+  #public-shell { display: flex; flex-direction: column; min-height: 100vh; }
+  #public-shell.hidden, #app-shell.hidden { display: none !important; }
+  #app-shell { display: flex; min-height: 100vh; }
+
+  /* ===== NAV ===== */
+  .pub-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .pub-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .pub-logo-icon { width: 36px; height: 36px; background: var(--teal); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pub-logo-text { font-size: 1.2rem; font-weight: 700; color: var(--teal-dark); letter-spacing: -0.5px; }
+  .pub-logo-text span { color: var(--bark); }
+  .pub-nav-links { display: flex; align-items: center; gap: 28px; }
+  .pub-nav-links a { text-decoration: none; color: var(--ink-mid); font-size: 0.9rem; font-weight: 500; transition: color 0.15s; }
+  .pub-nav-links a:hover { color: var(--teal); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 18px; border-radius: var(--radius); font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; text-decoration: none; transition: all 0.15s; line-height: 1; }
+  .btn-primary { background: var(--teal); color: var(--white); }
+  .btn-primary:hover { background: var(--teal-dark); }
+  .btn-outline { background: transparent; color: var(--teal); border: 1.5px solid var(--teal); }
+  .btn-outline:hover { background: var(--teal-pale); }
+  .btn-sm { padding: 6px 14px; font-size: 0.82rem; }
+  .btn-lg { padding: 12px 28px; font-size: 0.95rem; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #a93226; }
+  .btn-ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--sand); }
+  .btn-success { background: var(--success); color: #fff; }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 50%, var(--teal-light) 100%);
+    color: white;
+    padding: 80px 40px 90px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 350px; height: 350px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -60px;
+    width: 280px; height: 280px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .hero-eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 18px; }
+  .hero h1 span { color: var(--bark-light); }
+  .hero-sub { font-size: 1.1rem; opacity: 0.85; max-width: 560px; margin: 0 auto 36px; line-height: 1.65; }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-white { background: white; color: var(--teal-dark); font-weight: 700; }
+  .btn-white:hover { background: var(--teal-xpale); }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 28px 40px; display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 1.7rem; font-weight: 800; color: var(--teal-dark); letter-spacing: -1px; }
+  .stat-label { font-size: 0.8rem; color: var(--ink-soft); margin-top: 2px; }
+
+  /* ===== SECTIONS ===== */
+  .section { padding: 70px 40px; }
+  .section.bg-alt { background: var(--white); }
+  .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+  .section-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: var(--ink); letter-spacing: -0.8px; margin-bottom: 14px; }
+  .section-sub { color: var(--ink-soft); font-size: 1rem; line-height: 1.65; max-width: 560px; margin-bottom: 44px; }
+  .section-header { margin-bottom: 44px; }
+
+  /* ===== FEATURE GRID ===== */
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
+  .feature-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 26px; transition: all 0.2s; }
+  .feature-card:hover { border-color: var(--teal-light); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .feature-icon { font-size: 1.8rem; margin-bottom: 14px; }
+  .feature-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .feature-desc { font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+
+  /* ===== WORKFLOW ===== */
+  .workflow { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding-bottom: 10px; }
+  .wf-step { flex: 1; min-width: 120px; text-align: center; position: relative; padding: 0 10px; }
+  .wf-step:not(:last-child)::after { content: '→'; position: absolute; right: -10px; top: 20px; font-size: 1.2rem; color: var(--teal-light); font-weight: 700; }
+  .wf-num { width: 44px; height: 44px; background: var(--teal); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; margin: 0 auto 10px; }
+  .wf-label { font-size: 0.8rem; color: var(--ink-mid); font-weight: 500; line-height: 1.4; }
+
+  /* ===== PRICING ===== */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 900px; margin: 0 auto; }
+  .plan-card { border: 2px solid var(--border); border-radius: var(--radius-xl); padding: 32px 28px; background: var(--white); }
+  .plan-card.featured { border-color: var(--teal); position: relative; box-shadow: var(--shadow); }
+  .plan-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--teal); color: white; padding: 4px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; }
+  .plan-name { font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .plan-price { font-size: 2rem; font-weight: 800; color: var(--ink); letter-spacing: -1px; margin-bottom: 4px; }
+  .plan-price span { font-size: 0.9rem; font-weight: 400; color: var(--ink-soft); }
+  .plan-desc { font-size: 0.83rem; color: var(--ink-soft); margin-bottom: 22px; }
+  .plan-features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 8px; }
+  .plan-features li { font-size: 0.84rem; color: var(--ink-mid); display: flex; align-items: center; gap: 8px; }
+  .plan-features li::before { content: '✓'; color: var(--teal); font-weight: 700; flex-shrink: 0; }
+
+  /* ===== FOOTER ===== */
+  .pub-footer { background: var(--ink); color: rgba(255,255,255,0.6); padding: 40px; text-align: center; font-size: 0.85rem; margin-top: auto; }
+  .pub-footer strong { color: white; }
+
+  /* ===== LOGIN PAGE ===== */
+  #login-page { display: flex; min-height: 100vh; }
+  #login-page.hidden { display: none !important; }
+  .login-left { flex: 1; background: linear-gradient(160deg, var(--teal-dark), var(--teal-light)); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 40px; color: white; }
+  .login-right { width: 480px; background: var(--white); display: flex; flex-direction: column; justify-content: center; padding: 60px 50px; }
+  .login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+  .login-brand-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .login-brand-name { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
+  .login-left h2 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; text-align: center; }
+  .login-left p { opacity: 0.8; text-align: center; line-height: 1.7; max-width: 340px; }
+  .login-right h2 { font-size: 1.6rem; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; margin-bottom: 6px; }
+  .login-right p { color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 36px; }
+  .form-group { margin-bottom: 18px; }
+  .form-label { display: block; font-size: 0.83rem; font-weight: 600; color: var(--ink-mid); margin-bottom: 6px; }
+  .form-control { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 0.9rem; color: var(--ink); background: var(--white); transition: border-color 0.15s; outline: none; }
+  .form-control:focus { border-color: var(--teal); }
+  .form-select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 0.9rem; color: var(--ink); background: var(--white); outline: none; cursor: pointer; }
+  .form-select:focus { border-color: var(--teal); }
+  .demo-accounts { background: var(--teal-xpale); border: 1px solid var(--teal-pale); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 24px; }
+  .demo-accounts p { font-size: 0.78rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .demo-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .demo-row span { font-size: 0.82rem; color: var(--ink-mid); }
+  .demo-row .demo-badge { font-size: 0.72rem; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .badge-owner { background: #fef0e6; color: #c05c00; }
+  .badge-doctor { background: var(--info-light); color: var(--info); }
+  .badge-staff { background: var(--success-light); color: var(--success); }
+  .badge-customer { background: #f0e6fe; color: #6b21a8; }
+
+  /* ===== APP SIDEBAR ===== */
+  .app-sidebar { width: var(--sidebar-w); background: var(--teal-dark); display: flex; flex-direction: column; min-height: 100vh; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  .sidebar-logo { padding: 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+  .sidebar-logo-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.15); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .sidebar-logo-text { font-size: 1rem; font-weight: 800; color: white; letter-spacing: -0.3px; }
+  .sidebar-logo-text span { color: var(--bark-light); }
+  .sidebar-user { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-user-name { font-size: 0.85rem; font-weight: 700; color: white; }
+  .sidebar-user-role { font-size: 0.75rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+  .sidebar-section { padding: 16px 18px 6px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.35); }
+  .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 18px; color: rgba(255,255,255,0.75); font-size: 0.87rem; font-weight: 500; cursor: pointer; transition: all 0.15s; border-left: 3px solid transparent; text-decoration: none; }
+  .sidebar-item:hover { background: rgba(255,255,255,0.08); color: white; }
+  .sidebar-item.active { background: rgba(255,255,255,0.12); color: white; border-left-color: var(--bark-light); font-weight: 600; }
+  .sidebar-item-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-footer a { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.6); font-size: 0.84rem; cursor: pointer; text-decoration: none; }
+  .sidebar-footer a:hover { color: white; }
+
+  /* ===== APP MAIN ===== */
+  .app-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .app-topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 28px; height: 58px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .app-topbar-title { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+  .app-topbar-actions { display: flex; align-items: center; gap: 10px; }
+  .app-content { padding: 28px; flex: 1; }
+
+  /* ===== VIEWS ===== */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ===== PAGE HEADER ===== */
+  .page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .page-title { font-size: 1.3rem; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
+  .page-sub { font-size: 0.85rem; color: var(--ink-soft); margin-top: 2px; }
+
+  /* ===== DASHBOARD ===== */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+  .kpi-label { font-size: 0.78rem; color: var(--ink-soft); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .kpi-value { font-size: 1.9rem; font-weight: 800; color: var(--ink); letter-spacing: -1px; }
+  .kpi-change { font-size: 0.78rem; margin-top: 4px; }
+  .kpi-change.up { color: var(--success); }
+  .kpi-change.down { color: var(--danger); }
+  .kpi-card.accent { border-left: 4px solid var(--teal); }
+  .kpi-card.accent-warn { border-left: 4px solid var(--warn); }
+  .kpi-card.accent-danger { border-left: 4px solid var(--danger); }
+  .kpi-card.accent-info { border-left: 4px solid var(--info); }
+
+  /* ===== CARDS ===== */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 20px; }
+  .card-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ink-soft); padding: 10px 14px; border-bottom: 2px solid var(--border); text-align: left; white-space: nowrap; background: var(--sand); }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border-light); font-size: 0.87rem; color: var(--ink-mid); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--teal-xpale); }
+
+  /* ===== BADGES ===== */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+  .badge-success { background: var(--success-light); color: var(--success); }
+  .badge-danger { background: var(--danger-light); color: var(--danger); }
+  .badge-warn { background: var(--warn-light); color: var(--warn); }
+  .badge-info { background: var(--info-light); color: var(--info); }
+  .badge-neutral { background: var(--sand-dark); color: var(--ink-soft); }
+  .badge-teal { background: var(--teal-pale); color: var(--teal-dark); }
+
+  /* ===== AVATAR ===== */
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--teal-pale); color: var(--teal-dark); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; flex-shrink: 0; }
+  .avatar-sm { width: 28px; height: 28px; font-size: 0.72rem; }
+  .inline-flex { display: inline-flex; align-items: center; gap: 10px; }
+
+  /* ===== MODALS ===== */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: var(--radius-xl); padding: 32px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); position: relative; }
+  .modal-title { font-size: 1.15rem; font-weight: 800; color: var(--ink); margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; }
+  .modal-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--ink-soft); line-height: 1; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  textarea.form-control { resize: vertical; min-height: 80px; }
+
+  /* ===== NOTIFICATION TOAST ===== */
+  #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+  .toast { background: var(--ink); color: white; padding: 12px 18px; border-radius: var(--radius); font-size: 0.87rem; min-width: 260px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; }
+  .toast.success { background: var(--success); }
+  .toast.error { background: var(--danger); }
+  .toast.warn { background: var(--warn); }
+  @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
+  .empty-state .empty-icon { font-size: 3rem; margin-bottom: 14px; opacity: 0.5; }
+  .empty-state h3 { font-size: 1rem; font-weight: 700; color: var(--ink-mid); margin-bottom: 6px; }
+  .empty-state p { font-size: 0.85rem; }
+
+  /* ===== TABS ===== */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 24px; overflow-x: auto; }
+  .tab { padding: 10px 18px; font-size: 0.87rem; font-weight: 600; color: var(--ink-soft); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: all 0.15s; }
+  .tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+  .tab:hover:not(.active) { color: var(--ink); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ===== SEARCH & FILTER BAR ===== */
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .search-input { flex: 1; min-width: 200px; padding: 9px 14px 9px 36px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 0.87rem; outline: none; background: var(--white); position: relative; }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap::before { content: '🔍'; position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; }
+  .search-input:focus { border-color: var(--teal); }
+
+  /* ===== TIMELINE ===== */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-item::before { content: ''; position: absolute; left: -24px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--teal); border: 2px solid white; box-shadow: 0 0 0 2px var(--teal); }
+  .tl-date { font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 4px; }
+  .tl-content { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 0.87rem; }
+  .tl-title { font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .tl-body { color: var(--ink-soft); line-height: 1.6; }
+
+  /* ===== CHART PLACEHOLDER ===== */
+  .chart-placeholder { height: 160px; background: linear-gradient(to right, var(--teal-pale), var(--teal-xpale)); border-radius: var(--radius); display: flex; align-items: flex-end; padding: 10px; gap: 8px; overflow: hidden; }
+  .chart-bar { background: var(--teal); border-radius: 4px 4px 0 0; flex: 1; transition: height 0.3s; min-width: 20px; }
+
+  /* ===== NOTIFICATION PANEL ===== */
+  .notif-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .notif-body { flex: 1; }
+  .notif-title { font-size: 0.87rem; font-weight: 600; color: var(--ink); }
+  .notif-time { font-size: 0.75rem; color: var(--ink-muted); margin-top: 2px; }
+
+  /* ===== POS ===== */
+  .pos-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+  .pos-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .pos-product { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .pos-product:hover { border-color: var(--teal); background: var(--teal-xpale); }
+  .pos-product-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .pos-product-name { font-size: 0.82rem; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .pos-product-price { font-size: 0.8rem; color: var(--teal); font-weight: 700; }
+  .pos-cart { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); display: flex; flex-direction: column; }
+  .pos-cart-header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; }
+  .pos-cart-items { flex: 1; padding: 10px 18px; max-height: 300px; overflow-y: auto; }
+  .pos-cart-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border-light); font-size: 0.84rem; }
+  .pos-cart-item:last-child { border-bottom: none; }
+  .pos-cart-item-name { flex: 1; }
+  .pos-cart-item-qty { display: flex; align-items: center; gap: 6px; }
+  .qty-btn { width: 22px; height: 22px; border: 1px solid var(--border); border-radius: 4px; background: none; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+  .pos-cart-footer { padding: 16px 18px; border-top: 1px solid var(--border); }
+  .pos-total { font-size: 1.1rem; font-weight: 800; color: var(--ink); display: flex; justify-content: space-between; margin-bottom: 14px; }
+
+  /* ===== CALENDAR VIEW ===== */
+  .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 8px; min-height: 100px; }
+  .cal-day-label { font-size: 0.72rem; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cal-day-num { font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .cal-day.today .cal-day-num { color: white; background: var(--teal); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; margin-bottom: 6px; }
+  .cal-event { background: var(--teal-pale); border-left: 3px solid var(--teal); padding: 3px 6px; border-radius: 0 4px 4px 0; font-size: 0.72rem; margin-bottom: 3px; color: var(--teal-dark); cursor: pointer; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+  .progress-bar { height: 100%; background: var(--teal); border-radius: 4px; }
+
+  /* ===== INFO ROW ===== */
+  .info-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-light); }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { font-size: 0.8rem; color: var(--ink-soft); width: 130px; flex-shrink: 0; }
+  .info-value { font-size: 0.87rem; font-weight: 600; color: var(--ink); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .login-left { display: none; }
+    .login-right { width: 100%; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .pos-layout { grid-template-columns: 1fr; }
+    .cal-week { grid-template-columns: repeat(4, 1fr); }
+    .pub-nav-links { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 60px 20px; }
+    .section { padding: 50px 20px; }
+    .stats-bar { gap: 30px; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== TOAST CONTAINER ==================== -->
+<div id="toast-container"></div>
+
+<!-- ==================== PUBLIC WEBSITE ==================== -->
+<div id="public-shell">
+  <!-- NAV -->
+  <nav class="pub-nav">
+    <a class="pub-logo" href="#" onclick="showSection('hero')">
+      <div class="pub-logo-icon">🐾</div>
+      <div class="pub-logo-text">PetCare<span>Suite</span></div>
+    </a>
+    <div class="pub-nav-links">
+      <a href="#" onclick="showSection('features')">Fitur</a>
+      <a href="#" onclick="showSection('workflow-section')">Cara Kerja</a>
+      <a href="#" onclick="showSection('pricing')">Harga</a>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <a class="btn btn-ghost btn-sm" href="#" onclick="showPage('login')">Masuk</a>
+      <a class="btn btn-primary btn-sm" href="#" onclick="showPage('login')">Mulai Gratis</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-eyebrow">🏆 Platform #1 Klinik Hewan di Indonesia</div>
+    <h1>Kelola Klinik Hewan<br><span>Lebih Mudah, Lebih Cerdas</span></h1>
+    <p class="hero-sub">Satu platform terintegrasi untuk appointment, rekam medis, grooming, petshop, kasir, dan laporan bisnis — semua dalam genggaman Anda.</p>
+    <div class="hero-cta">
+      <a class="btn btn-white btn-lg" href="#" onclick="showPage('login')">🐾 Coba Gratis 14 Hari</a>
+      <a class="btn btn-outline btn-lg" href="#" style="color:white;border-color:rgba(255,255,255,0.5);" onclick="showSection('features')">Lihat Fitur</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">500+</div><div class="stat-label">Klinik Aktif</div></div>
+    <div class="stat-item"><div class="stat-num">250K+</div><div class="stat-label">Pasien Terdaftar</div></div>
+    <div class="stat-item"><div class="stat-num">2M+</div><div class="stat-label">Rekam Medis</div></div>
+    <div class="stat-item"><div class="stat-num">99.5%</div><div class="stat-label">Uptime</div></div>
+    <div class="stat-item"><div class="stat-num">4.9★</div><div class="stat-label">Rating Pengguna</div></div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div class="section-header">
+        <div class="section-label">Fitur Lengkap</div>
+        <div class="section-title">Semua yang Klinik Anda Butuhkan</div>
+        <div class="section-sub">Dari manajemen klinis hingga laporan keuangan, PetCare Suite mencakup seluruh aspek operasional klinik hewan modern.</div>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="feature-icon">📅</div><div class="feature-title">Appointment</div><div class="feature-desc">Booking online, konfirmasi otomatis, kalender visual, dan manajemen jadwal dokter.</div></div>
+        <div class="feature-card"><div class="feature-icon">📋</div><div class="feature-title">Rekam Medis</div><div class="feature-desc">Catatan pemeriksaan lengkap, diagnosa, resep, dan histori kesehatan setiap hewan.</div></div>
+        <div class="feature-card"><div class="feature-icon">💉</div><div class="feature-title">Vaksinasi</div><div class="feature-desc">Jadwal vaksin, reminder otomatis ke pemilik, dan riwayat vaksinasi terintegrasi.</div></div>
+        <div class="feature-card"><div class="feature-icon">🏥</div><div class="feature-title">Rawat Inap</div><div class="feature-desc">Manajemen kamar, monitoring kondisi harian, dan update real-time ke pemilik.</div></div>
+        <div class="feature-card"><div class="feature-icon">✂️</div><div class="feature-title">Grooming</div><div class="feature-desc">Jadwal grooming, catatan layanan, notifikasi selesai via WhatsApp.</div></div>
+        <div class="feature-card"><div class="feature-icon">🛒</div><div class="feature-title">Petshop & POS</div><div class="feature-desc">Kasir terintegrasi, manajemen produk, stok real-time, dan invoice otomatis.</div></div>
+        <div class="feature-card"><div class="feature-icon">📦</div><div class="feature-title">Inventori</div><div class="feature-desc">Stok obat dan alat, alert stok minimum, dan laporan penggunaan.</div></div>
+        <div class="feature-card"><div class="feature-icon">💰</div><div class="feature-title">Akuntansi</div><div class="feature-desc">Pencatatan pendapatan, pengeluaran, laporan keuangan, dan profit loss otomatis.</div></div>
+        <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Laporan & Analytics</div><div class="feature-desc">Dashboard real-time, laporan klinis, finansial, inventori, dan produk terlaris.</div></div>
+        <div class="feature-card"><div class="feature-icon">🔔</div><div class="feature-title">Notifikasi WhatsApp</div><div class="feature-desc">Konfirmasi appointment, reminder vaksin, notifikasi invoice via WhatsApp & Email.</div></div>
+        <div class="feature-card"><div class="feature-icon">👤</div><div class="feature-title">Portal Pelanggan</div><div class="feature-desc">Pemilik hewan bisa cek rekam medis, jadwal vaksin, dan invoice dari rumah.</div></div>
+        <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title">Website Klinik</div><div class="feature-desc">Halaman publik dengan katalog layanan, artikel edukasi, dan testimonial.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW -->
+  <section class="section bg-alt" id="workflow-section">
+    <div style="max-width:900px;margin:0 auto;">
+      <div class="section-header">
+        <div class="section-label">Cara Kerja</div>
+        <div class="section-title">Alur Kunjungan yang Mulus</div>
+        <div class="section-sub">Dari booking hingga reminder kontrol, semua terkoneksi otomatis.</div>
+      </div>
+      <div class="workflow">
+        <div class="wf-step"><div class="wf-num">1</div><div class="wf-label">Booking Appointment</div></div>
+        <div class="wf-step"><div class="wf-num">2</div><div class="wf-label">Hewan Datang</div></div>
+        <div class="wf-step"><div class="wf-num">3</div><div class="wf-label">Pemeriksaan Dokter</div></div>
+        <div class="wf-step"><div class="wf-num">4</div><div class="wf-label">Diagnosa & Tindakan</div></div>
+        <div class="wf-step"><div class="wf-num">5</div><div class="wf-label">Invoice & Bayar</div></div>
+        <div class="wf-step"><div class="wf-num">6</div><div class="wf-label">Riwayat Tersimpan</div></div>
+        <div class="wf-step"><div class="wf-num">7</div><div class="wf-label">Reminder Otomatis</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section" id="pricing">
+    <div style="max-width:900px;margin:0 auto;">
+      <div class="section-header" style="text-align:center;">
+        <div class="section-label">Harga</div>
+        <div class="section-title">Transparan, Tanpa Biaya Tersembunyi</div>
+        <div class="section-sub" style="margin:0 auto 44px;">Semua paket mendapat fitur lengkap. Perbedaan hanya pada storage, traffic, dan support.</div>
+      </div>
+      <div class="pricing-grid">
+        <div class="plan-card">
+          <div class="plan-name">Basic</div>
+          <div class="plan-price">Rp 299K<span>/bulan</span></div>
+          <div class="plan-desc">Cocok untuk klinik baru</div>
+          <ul class="plan-features">
+            <li>Semua modul aktif</li>
+            <li>Storage 10 GB</li>
+            <li>Backup mingguan</li>
+            <li>Support email</li>
+            <li>50.000 rekam medis</li>
+          </ul>
+          <a class="btn btn-outline" href="#" onclick="showPage('login')" style="width:100%;">Pilih Basic</a>
+        </div>
+        <div class="plan-card featured">
+          <div class="plan-badge">TERPOPULER</div>
+          <div class="plan-name">Professional</div>
+          <div class="plan-price">Rp 599K<span>/bulan</span></div>
+          <div class="plan-desc">Untuk klinik yang berkembang</div>
+          <ul class="plan-features">
+            <li>Semua modul aktif</li>
+            <li>Storage 50 GB</li>
+            <li>Backup harian</li>
+            <li>Support prioritas</li>
+            <li>500.000 rekam medis</li>
+            <li>Notifikasi WhatsApp</li>
+          </ul>
+          <a class="btn btn-primary" href="#" onclick="showPage('login')" style="width:100%;">Pilih Professional</a>
+        </div>
+        <div class="plan-card">
+          <div class="plan-name">Enterprise</div>
+          <div class="plan-price">Rp 999K<span>/bulan</span></div>
+          <div class="plan-desc">Untuk klinik besar & hospital</div>
+          <ul class="plan-features">
+            <li>Semua modul aktif</li>
+            <li>Storage Unlimited</li>
+            <li>Backup real-time</li>
+            <li>Support 24/7</li>
+            <li>Rekam medis unlimited</li>
+            <li>WhatsApp + Email</li>
+            <li>Dedicated server</li>
+          </ul>
+          <a class="btn btn-outline" href="#" onclick="showPage('login')" style="width:100%;">Hubungi Kami</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <div style="background:linear-gradient(135deg,var(--teal-dark),var(--teal));padding:60px 40px;text-align:center;color:white;">
+    <h2 style="font-size:2rem;font-weight:800;letter-spacing:-1px;margin-bottom:12px;">Siap Digitalisasi Klinik Anda?</h2>
+    <p style="opacity:0.85;margin-bottom:28px;">Bergabung dengan 500+ klinik yang sudah lebih efisien dengan PetCare Suite.</p>
+    <a class="btn btn-white btn-lg" href="#" onclick="showPage('login')">Mulai Uji Coba Gratis</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="pub-footer">
+    <p><strong>PetCare Suite</strong> — Platform Manajemen Klinik Hewan & Petshop Indonesia</p>
+    <p style="margin-top:8px;">© 2024 PetCare Suite. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div id="login-page" class="hidden">
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-brand-icon">🐾</div>
+      <div class="login-brand-name">PetCare Suite</div>
+    </div>
+    <h2>Selamat Datang Kembali</h2>
+    <p>Kelola klinik hewan Anda dengan lebih mudah, cerdas, dan efisien bersama PetCare Suite.</p>
+  </div>
+  <div class="login-right">
+    <h2>Masuk ke Akun Anda</h2>
+    <p>Gunakan akun demo di bawah untuk mencoba semua role.</p>
+    <div class="demo-accounts">
+      <p>Akun Demo</p>
+      <div class="demo-row"><span>📧 owner@petcare.id &nbsp; 🔑 demo123</span><span class="demo-badge badge-owner">Owner</span></div>
+      <div class="demo-row"><span>📧 dokter@petcare.id &nbsp; 🔑 demo123</span><span class="demo-badge badge-doctor">Dokter</span></div>
+      <div class="demo-row"><span>📧 staff@petcare.id &nbsp; 🔑 demo123</span><span class="demo-badge badge-staff">Staff</span></div>
+      <div class="demo-row"><span>📧 budi@gmail.com &nbsp; 🔑 demo123</span><span class="demo-badge badge-customer">Customer</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-control" id="login-email" type="email" placeholder="email@example.com" value="owner@petcare.id">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-control" id="login-password" type="password" placeholder="••••••••" value="demo123">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Role</label>
+      <select class="form-select" id="login-role">
+        <option value="owner">Owner — Pemilik Klinik</option>
+        <option value="doctor">Doctor — Dokter Hewan</option>
+        <option value="staff">Staff — Operasional</option>
+        <option value="customer">Customer — Pemilik Hewan</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:12px;" onclick="doLogin()">Masuk</button>
+    <p style="text-align:center;margin-top:16px;font-size:0.84rem;color:var(--ink-soft);">
+      Belum punya akun? <a href="#" onclick="showPage('public')" style="color:var(--teal);font-weight:600;">Daftar Gratis</a>
+    </p>
+  </div>
+</div>
+
+<!-- ==================== APP SHELL ==================== -->
+<div id="app-shell" class="hidden">
+  <!-- SIDEBAR -->
+  <div class="app-sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🐾</div>
+      <div class="sidebar-logo-text">PetCare<span>Suite</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name" id="sidebar-user-name">Loading...</div>
+      <div class="sidebar-user-role" id="sidebar-user-role">—</div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav"><!-- populated by JS --></div>
+    <div class="sidebar-footer">
+      <a href="#" onclick="doLogout()">🚪 Keluar</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="app-main">
+    <div class="app-topbar">
+      <div class="app-topbar-title" id="topbar-title">Dashboard</div>
+      <div class="app-topbar-actions">
+        <span style="font-size:0.8rem;color:var(--ink-soft);" id="topbar-date"></span>
+        <button class="btn btn-ghost btn-sm" onclick="openModal('notif-modal')">🔔 <span id="notif-badge" style="background:var(--danger);color:white;border-radius:20px;padding:1px 6px;font-size:0.7rem;">3</span></button>
+      </div>
+    </div>
+    <div class="app-content">
+      <!-- VIEWS ARE INSERTED HERE BY JS -->
+      <div id="view-dashboard" class="view"><!-- JS --></div>
+      <div id="view-appointments" class="view"><!-- JS --></div>
+      <div id="view-medical-records" class="view"><!-- JS --></div>
+      <div id="view-vaccination" class="view"><!-- JS --></div>
+      <div id="view-monitoring" class="view"><!-- JS --></div>
+      <div id="view-inpatient" class="view"><!-- JS --></div>
+      <div id="view-customers" class="view"><!-- JS --></div>
+      <div id="view-pets" class="view"><!-- JS --></div>
+      <div id="view-grooming" class="view"><!-- JS --></div>
+      <div id="view-inventory" class="view"><!-- JS --></div>
+      <div id="view-products" class="view"><!-- JS --></div>
+      <div id="view-pos" class="view"><!-- JS --></div>
+      <div id="view-invoices" class="view"><!-- JS --></div>
+      <div id="view-accounting" class="view"><!-- JS --></div>
+      <div id="view-reports" class="view"><!-- JS --></div>
+      <div id="view-users" class="view"><!-- JS --></div>
+      <div id="view-settings" class="view"><!-- JS --></div>
+      <!-- CUSTOMER PORTAL VIEWS -->
+      <div id="view-my-pets" class="view"><!-- JS --></div>
+      <div id="view-my-appointments" class="view"><!-- JS --></div>
+      <div id="view-my-medical" class="view"><!-- JS --></div>
+      <div id="view-my-vaccination" class="view"><!-- JS --></div>
+      <div id="view-my-invoices" class="view"><!-- JS --></div>
+      <div id="view-my-profile" class="view"><!-- JS --></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+<!-- Notification Modal -->
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title">🔔 Notifikasi <button class="modal-close" onclick="closeModal('notif-modal')">✕</button></div>
+    <div id="notif-list">
+      <div class="notif-item"><div class="notif-icon" style="background:var(--teal-pale);">📅</div><div class="notif-body"><div class="notif-title">Appointment Baru — Buddy (Golden Retriever)</div><div class="notif-time">5 menit lalu</div></div></div>
+      <div class="notif-item"><div class="notif-icon" style="background:var(--warn-light);">💉</div><div class="notif-body"><div class="notif-title">Reminder Vaksin — Max jatuh tempo besok</div><div class="notif-time">1 jam lalu</div></div></div>
+      <div class="notif-item"><div class="notif-icon" style="background:var(--success-light);">✅</div><div class="notif-body"><div class="notif-title">Grooming selesai — Luna (Poodle) siap dijemput</div><div class="notif-time">2 jam lalu</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Generic Record Modal -->
+<div class="modal-overlay" id="record-modal">
+  <div class="modal">
+    <div class="modal-title" id="record-modal-title">Form <button class="modal-close" onclick="closeModal('record-modal')">✕</button></div>
+    <div id="record-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('record-modal')">Batal</button>
+      <button class="btn btn-primary" onclick="saveRecord()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- POS Payment Modal -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">💳 Proses Pembayaran <button class="modal-close" onclick="closeModal('payment-modal')">✕</button></div>
+    <div id="payment-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('payment-modal')">Batal</button>
+      <button class="btn btn-success" onclick="processPayment()">Bayar Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE & DATA
+// ============================================================
+let currentUser = null;
+let currentView = 'dashboard';
+let cart = [];
+
+const USERS = {
+  'owner@petcare.id':   { name: 'Dr. Siti Rahma', role: 'owner',    roleLabel: 'Owner',    email: 'owner@petcare.id' },
+  'dokter@petcare.id':  { name: 'Dr. Ahmad Fauzi', role: 'doctor',   roleLabel: 'Dokter Hewan', email: 'dokter@petcare.id' },
+  'staff@petcare.id':   { name: 'Dewi Kusuma',     role: 'staff',    roleLabel: 'Staff Klinik', email: 'staff@petcare.id' },
+  'budi@gmail.com':     { name: 'Budi Santoso',    role: 'customer', roleLabel: 'Pemilik Hewan', email: 'budi@gmail.com' },
+};
+
+// Sample Data
+const DATA = {
+  appointments: [
+    { id: 1, date: '2024-06-15', time: '09:00', customer: 'Budi Santoso', pet: 'Max (Labrador)', doctor: 'Dr. Ahmad', type: 'Pemeriksaan Umum', status: 'confirmed' },
+    { id: 2, date: '2024-06-15', time: '10:30', customer: 'Sari Dewi', pet: 'Luna (Poodle)', doctor: 'Dr. Ahmad', type: 'Vaksinasi', status: 'waiting' },
+    { id: 3, date: '2024-06-15', time: '13:00', customer: 'Andi Wahyu', pet: 'Buddy (Golden)', doctor: 'Dr. Ahmad', type: 'Kontrol Pasca Operasi', status: 'completed' },
+    { id: 4, date: '2024-06-16', time: '09:30', customer: 'Rina Lestari', pet: 'Mochi (Kucing)', doctor: 'Dr. Ahmad', type: 'Grooming', status: 'confirmed' },
+    { id: 5, date: '2024-06-16', time: '11:00', customer: 'Budi Santoso', pet: 'Bella (Shih Tzu)', doctor: 'Dr. Ahmad', type: 'Pemeriksaan Kulit', status: 'confirmed' },
+  ],
+  customers: [
+    { id: 1, name: 'Budi Santoso', phone: '081234567890', email: 'budi@gmail.com', pets: 2, lastVisit: '2024-06-10', status: 'active' },
+    { id: 2, name: 'Sari Dewi', phone: '085678901234', email: 'sari@gmail.com', pets: 1, lastVisit: '2024-06-12', status: 'active' },
+    { id: 3, name: 'Andi Wahyu', phone: '087890123456', email: 'andi@gmail.com', pets: 3, lastVisit: '2024-06-08', status: 'active' },
+    { id: 4, name: 'Rina Lestari', phone: '089012345678', email: 'rina@gmail.com', pets: 1, lastVisit: '2024-05-30', status: 'active' },
+    { id: 5, name: 'Dian Pratama', phone: '082345678901', email: 'dian@gmail.com', pets: 2, lastVisit: '2024-06-01', status: 'inactive' },
+  ],
+  pets: [
+    { id: 1, name: 'Max', species: 'Anjing', breed: 'Labrador', age: '3 thn', gender: 'Jantan', owner: 'Budi Santoso', weight: '28 kg', status: 'Sehat' },
+    { id: 2, name: 'Bella', species: 'Anjing', breed: 'Shih Tzu', age: '2 thn', gender: 'Betina', owner: 'Budi Santoso', weight: '5.2 kg', status: 'Sehat' },
+    { id: 3, name: 'Luna', species: 'Anjing', breed: 'Poodle', age: '4 thn', gender: 'Betina', owner: 'Sari Dewi', weight: '7 kg', status: 'Kontrol' },
+    { id: 4, name: 'Buddy', species: 'Anjing', breed: 'Golden Retriever', age: '5 thn', gender: 'Jantan', owner: 'Andi Wahyu', weight: '32 kg', status: 'Rawat Inap' },
+    { id: 5, name: 'Mochi', species: 'Kucing', breed: 'Persian', age: '1 thn', gender: 'Betina', owner: 'Rina Lestari', weight: '3.5 kg', status: 'Sehat' },
+  ],
+  medicalRecords: [
+    { id: 1, date: '2024-06-10', pet: 'Max (Labrador)', owner: 'Budi Santoso', doctor: 'Dr. Ahmad', complaint: 'Nafsu makan berkurang', diagnosis: 'Gastritis ringan', treatment: 'Antasida + diet rendah lemak', status: 'completed' },
+    { id: 2, date: '2024-06-12', pet: 'Luna (Poodle)', owner: 'Sari Dewi', doctor: 'Dr. Ahmad', complaint: 'Vaksinasi rutin', diagnosis: 'Sehat', treatment: 'Vaksin Rabies + Distemper', status: 'completed' },
+    { id: 3, date: '2024-06-08', pet: 'Buddy (Golden)', owner: 'Andi Wahyu', doctor: 'Dr. Ahmad', complaint: 'Kaki depan pincang', diagnosis: 'Ligamen robek ringan', treatment: 'Anti-inflamasi + istirahat 2 minggu', status: 'follow-up' },
+  ],
+  vaccinations: [
+    { id: 1, pet: 'Max', owner: 'Budi Santoso', vaccine: 'Rabies', date: '2024-01-15', nextDue: '2025-01-15', doctor: 'Dr. Ahmad', status: 'valid' },
+    { id: 2, pet: 'Luna', owner: 'Sari Dewi', vaccine: 'DHPPiL', date: '2024-03-20', nextDue: '2025-03-20', doctor: 'Dr. Ahmad', status: 'valid' },
+    { id: 3, pet: 'Mochi', owner: 'Rina Lestari', vaccine: 'FVRCP', date: '2023-12-10', nextDue: '2024-06-16', doctor: 'Dr. Ahmad', status: 'due' },
+    { id: 4, pet: 'Buddy', owner: 'Andi Wahyu', vaccine: 'Bordetella', date: '2023-11-05', nextDue: '2024-05-05', doctor: 'Dr. Ahmad', status: 'overdue' },
+  ],
+  inpatients: [
+    { id: 1, pet: 'Buddy (Golden)', owner: 'Andi Wahyu', room: 'Kamar A-1', admitted: '2024-06-08', doctor: 'Dr. Ahmad', reason: 'Ligamen robek', status: 'active', days: 7 },
+    { id: 2, pet: 'Whisky (Kucing)', owner: 'Dian Pratama', room: 'Kamar B-2', admitted: '2024-06-13', doctor: 'Dr. Ahmad', reason: 'Infeksi saluran napas', status: 'active', days: 2 },
+  ],
+  grooming: [
+    { id: 1, date: '2024-06-15', pet: 'Luna (Poodle)', owner: 'Sari Dewi', services: 'Mandi + Potong', staff: 'Dewi', price: 'Rp 150.000', status: 'in-progress' },
+    { id: 2, date: '2024-06-15', pet: 'Mochi (Persian)', owner: 'Rina Lestari', services: 'Full Grooming', staff: 'Dewi', price: 'Rp 200.000', status: 'completed' },
+    { id: 3, date: '2024-06-14', pet: 'Max (Labrador)', owner: 'Budi Santoso', services: 'Mandi + Sisir', staff: 'Dewi', price: 'Rp 100.000', status: 'completed' },
+  ],
+  inventory: [
+    { id: 1, name: 'Amoxicillin 250mg', category: 'Antibiotik', stock: 120, unit: 'kapsul', minStock: 50, expiry: '2025-08-01', price: 'Rp 3.500' },
+    { id: 2, name: 'Metronidazole Tablet', category: 'Antibiotik', stock: 80, unit: 'tablet', minStock: 30, expiry: '2025-06-15', price: 'Rp 2.800' },
+    { id: 3, name: 'Infus NaCl 500ml', category: 'Cairan Infus', stock: 15, unit: 'botol', minStock: 20, expiry: '2025-12-01', price: 'Rp 25.000' },
+    { id: 4, name: 'Jarum Suntik 5cc', category: 'Alat Medis', stock: 200, unit: 'pcs', minStock: 50, expiry: '2026-01-01', price: 'Rp 1.500' },
+    { id: 5, name: 'Vitamin B Complex', category: 'Suplemen', stock: 5, unit: 'botol', minStock: 10, expiry: '2024-09-01', price: 'Rp 45.000' },
+  ],
+  products: [
+    { id: 1, name: 'Royal Canin Medium Adult', category: 'Makanan', price: 350000, stock: 25, icon: '🐕' },
+    { id: 2, name: 'Whiskas Tuna 400g', category: 'Makanan', price: 28000, stock: 50, icon: '🐟' },
+    { id: 3, name: 'Shampoo Anjing Anti-Kutu', category: 'Perawatan', price: 65000, stock: 30, icon: '🛁' },
+    { id: 4, name: 'Tali Leash Nylon', category: 'Aksesori', price: 45000, stock: 20, icon: '🔗' },
+    { id: 5, name: 'Mainan Bola Karet', category: 'Aksesori', price: 25000, stock: 40, icon: '⚽' },
+    { id: 6, name: 'Tempat Makan Stainless', category: 'Aksesori', price: 55000, stock: 15, icon: '🥣' },
+    { id: 7, name: 'Obat Cacing Universal', category: 'Obat', price: 85000, stock: 35, icon: '💊' },
+    { id: 8, name: 'Vitamin C Anjing', category: 'Suplemen', price: 120000, stock: 12, icon: '🌿' },
+  ],
+  invoices: [
+    { id: 'INV-001', date: '2024-06-10', customer: 'Budi Santoso', services: 'Pemeriksaan + Obat', amount: 'Rp 350.000', status: 'paid' },
+    { id: 'INV-002', date: '2024-06-12', customer: 'Sari Dewi', services: 'Vaksinasi Rabies', amount: 'Rp 250.000', status: 'paid' },
+    { id: 'INV-003', date: '2024-06-14', customer: 'Rina Lestari', services: 'Grooming Full', amount: 'Rp 200.000', status: 'unpaid' },
+    { id: 'INV-004', date: '2024-06-15', customer: 'Andi Wahyu', services: 'Rawat Inap 7 hari', amount: 'Rp 1.750.000', status: 'unpaid' },
+  ],
+  users: [
+    { id: 1, name: 'Dr. Siti Rahma', email: 'owner@petcare.id', role: 'owner', status: 'active', lastLogin: '2024-06-15' },
+    { id: 2, name: 'Dr. Ahmad Fauzi', email: 'dokter@petcare.id', role: 'doctor', status: 'active', lastLogin: '2024-06-15' },
+    { id: 3, name: 'Dewi Kusuma', email: 'staff@petcare.id', role: 'staff', status: 'active', lastLogin: '2024-06-14' },
+    { id: 4, name: 'Budi Santoso', email: 'budi@gmail.com', role: 'customer', status: 'active', lastLogin: '2024-06-13' },
+  ],
+};
+
+// ============================================================
+// MENUS per ROLE
+// ============================================================
+const MENUS = {
+  owner: [
+    { section: 'UTAMA' },
+    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+    { section: 'KLINIS' },
+    { id: 'appointments', icon: '📅', label: 'Appointment' },
+    { id: 'medical-records', icon: '📋', label: 'Rekam Medis' },
+    { id: 'vaccination', icon: '💉', label: 'Vaksinasi' },
+    { id: 'monitoring', icon: '🩺', label: 'Monitoring' },
+    { id: 'inpatient', icon: '🏥', label: 'Rawat Inap' },
+    { section: 'OPERASIONAL' },
+    { id: 'customers', icon: '👥', label: 'Pelanggan' },
+    { id: 'pets', icon: '🐾', label: 'Data Hewan' },
+    { id: 'grooming', icon: '✂️', label: 'Grooming' },
+    { id: 'inventory', icon: '📦', label: 'Inventori' },
+    { section: 'KOMERSIAL' },
+    { id: 'products', icon: '🛍️', label: 'Produk Petshop' },
+    { id: 'pos', icon: '🛒', label: 'Kasir (POS)' },
+    { id: 'invoices', icon: '📄', label: 'Invoice' },
+    { id: 'accounting', icon: '💰', label: 'Akuntansi' },
+    { section: 'MANAJEMEN' },
+    { id: 'reports', icon: '📈', label: 'Laporan' },
+    { id: 'users', icon: '👤', label: 'Pengguna' },
+    { id: 'settings', icon: '⚙️', label: 'Pengaturan' },
+  ],
+  doctor: [
+    { section: 'UTAMA' },
+    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+    { section: 'KLINIS' },
+    { id: 'appointments', icon: '📅', label: 'Appointment' },
+    { id: 'medical-records', icon: '📋', label: 'Rekam Medis' },
+    { id: 'vaccination', icon: '💉', label: 'Vaksinasi' },
+    { id: 'monitoring', icon: '🩺', label: 'Monitoring' },
+  ],
+  staff: [
+    { section: 'UTAMA' },
+    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+    { section: 'OPERASIONAL' },
+    { id: 'appointments', icon: '📅', label: 'Appointment' },
+    { id: 'customers', icon: '👥', label: 'Pelanggan' },
+    { id: 'pets', icon: '🐾', label: 'Data Hewan' },
+    { id: 'grooming', icon: '✂️', label: 'Grooming' },
+    { id: 'inventory', icon: '📦', label: 'Inventori' },
+    { id: 'inpatient', icon: '🏥', label: 'Rawat Inap' },
+    { section: 'KASIR' },
+    { id: 'products', icon: '🛍️', label: 'Produk' },
+    { id: 'pos', icon: '🛒', label: 'Kasir (POS)' },
+    { id: 'invoices', icon: '📄', label: 'Invoice' },
+  ],
+  customer: [
+    { section: 'PORTAL PELANGGAN' },
+    { id: 'dashboard', icon: '🏠', label: 'Beranda' },
+    { id: 'my-pets', icon: '🐾', label: 'Hewan Saya' },
+    { id: 'my-appointments', icon: '📅', label: 'Jadwal Kunjungan' },
+    { id: 'my-medical', icon: '📋', label: 'Rekam Medis' },
+    { id: 'my-vaccination', icon: '💉', label: 'Vaksinasi' },
+    { id: 'my-invoices', icon: '📄', label: 'Invoice Saya' },
+    { id: 'my-profile', icon: '👤', label: 'Profil Saya' },
+  ],
+};
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+function showPage(page) {
+  document.getElementById('public-shell').classList.toggle('hidden', page !== 'public');
+  document.getElementById('login-page').classList.toggle('hidden', page !== 'login');
+  document.getElementById('app-shell').classList.toggle('hidden', page !== 'app');
+}
+
+function showSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value.trim();
+  const roleSelect = document.getElementById('login-role').value;
+
+  if (!email || !pass) { showToast('Isi email dan password', 'error'); return; }
+  if (pass !== 'demo123') { showToast('Password salah', 'error'); return; }
+
+  const user = USERS[email];
+  if (!user) { showToast('Email tidak ditemukan', 'error'); return; }
+
+  // For demo: override role with select
+  currentUser = { ...user, role: roleSelect, roleLabel: { owner: 'Owner', doctor: 'Dokter Hewan', staff: 'Staff Klinik', customer: 'Pemilik Hewan' }[roleSelect] };
+
+  document.getElementById('sidebar-user-name').textContent = currentUser.name;
+  document.getElementById('sidebar-user-role').textContent = currentUser.roleLabel;
+
+  const d = new Date();
+  document.getElementById('topbar-date').textContent = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  buildSidebar();
+  showPage('app');
+  navigateTo('dashboard');
+  showToast(`Selamat datang, ${currentUser.name}!`, 'success');
+}
+
+function doLogout() {
+  currentUser = null;
+  cart = [];
+  showPage('public');
+  showToast('Berhasil keluar', 'success');
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function buildSidebar() {
+  const nav = document.getElementById('sidebar-nav');
+  const menus = MENUS[currentUser.role] || [];
+  nav.innerHTML = menus.map(m => {
+    if (m.section) return `<div class="sidebar-section">${m.section}</div>`;
+    return `<a class="sidebar-item" id="menu-${m.id}" onclick="navigateTo('${m.id}')"><span class="sidebar-item-icon">${m.icon}</span>${m.label}</a>`;
+  }).join('');
+}
+
+function navigateTo(viewId) {
+  // Deactivate all
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+
+  currentView = viewId;
+  const viewEl = document.getElementById('view-' + viewId);
+  if (viewEl) {
+    viewEl.classList.add('active');
+    renderView(viewId, viewEl);
+  }
+
+  const menuEl = document.getElementById('menu-' + viewId);
+  if (menuEl) menuEl.classList.add('active');
+
+  const titles = {
+    dashboard: 'Dashboard', appointments: 'Appointment', 'medical-records': 'Rekam Medis',
+    vaccination: 'Vaksinasi', monitoring: 'Monitoring', inpatient: 'Rawat Inap',
+    customers: 'Data Pelanggan', pets: 'Data Hewan', grooming: 'Grooming',
+    inventory: 'Inventori', products: 'Produk Petshop', pos: 'Kasir (POS)',
+    invoices: 'Invoice', accounting: 'Akuntansi', reports: 'Laporan & Analitik',
+    users: 'Manajemen Pengguna', settings: 'Pengaturan',
+    'my-pets': 'Hewan Saya', 'my-appointments': 'Jadwal Kunjungan',
+    'my-medical': 'Rekam Medis', 'my-vaccination': 'Vaksinasi',
+    'my-invoices': 'Invoice Saya', 'my-profile': 'Profil Saya',
+  };
+  document.getElementById('topbar-title').textContent = titles[viewId] || viewId;
+}
+
+// ============================================================
+// VIEW RENDERER
+// ============================================================
+function renderView(id, el) {
+  const role = currentUser?.role;
+  switch(id) {
+    case 'dashboard': el.innerHTML = renderDashboard(role); break;
+    case 'appointments': el.innerHTML = renderAppointments(); break;
+    case 'medical-records': el.innerHTML = renderMedicalRecords(); break;
+    case 'vaccination': el.innerHTML = renderVaccination(); break;
+    case 'monitoring': el.innerHTML = renderMonitoring(); break;
+    case 'inpatient': el.innerHTML = renderInpatient(); break;
+    case 'customers': el.innerHTML = renderCustomers(); break;
+    case 'pets': el.innerHTML = renderPets(); break;
+    case 'grooming': el.innerHTML = renderGrooming(); break;
+    case 'inventory': el.innerHTML = renderInventory(); break;
+    case 'products': el.innerHTML = renderProducts(); break;
+    case 'pos': el.innerHTML = renderPOS(); break;
+    case 'invoices': el.innerHTML = renderInvoices(); break;
+    case 'accounting': el.innerHTML = renderAccounting(); break;
+    case 'reports': el.innerHTML = renderReports(); break;
+    case 'users': el.innerHTML = renderUsers(); break;
+    case 'settings': el.innerHTML = renderSettings(); break;
+    case 'my-pets': el.innerHTML = renderMyPets(); break;
+    case 'my-appointments': el.innerHTML = renderMyAppointments(); break;
+    case 'my-medical': el.innerHTML = renderMyMedical(); break;
+    case 'my-vaccination': el.innerHTML = renderMyVaccination(); break;
+    case 'my-invoices': el.innerHTML = renderMyInvoices(); break;
+    case 'my-profile': el.innerHTML = renderMyProfile(); break;
+  }
+  // Re-attach POS listeners
+  if (id === 'pos') attachPOSListeners();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function statusBadge(status) {
+  const map = {
+    confirmed: ['badge-info', '✓ Konfirmasi'],
+    waiting: ['badge-warn', '⏳ Menunggu'],
+    completed: ['badge-success', '✓ Selesai'],
+    cancelled: ['badge-danger', '✗ Batal'],
+    active: ['badge-success', '● Aktif'],
+    inactive: ['badge-neutral', '○ Nonaktif'],
+    paid: ['badge-success', '✓ Lunas'],
+    unpaid: ['badge-warn', '! Belum Bayar'],
+    valid: ['badge-success', 'Valid'],
+    due: ['badge-warn', 'Jatuh Tempo'],
+    overdue: ['badge-danger', 'Terlambat'],
+    'follow-up': ['badge-info', 'Follow Up'],
+    'in-progress': ['badge-info', '⟳ Proses'],
+    owner: ['badge-owner', '👑 Owner'],
+    doctor: ['badge-doctor', '⚕ Dokter'],
+    staff: ['badge-staff', '🛎 Staff'],
+    customer: ['badge-customer', '👤 Customer'],
+  };
+  const [cls, label] = map[status] || ['badge-neutral', status];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function fmt(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
+
+function actionBtns(type) {
+  return `<div style="display:flex;gap:6px;">
+    <button class="btn btn-ghost btn-sm" onclick="showToast('Membuka detail ${type}...','success')">Detail</button>
+    <button class="btn btn-ghost btn-sm" onclick="showToast('Mode edit ${type}...','success')">Edit</button>
+  </div>`;
+}
+
+function pageHeader(title, sub, btnLabel, btnAction) {
+  return `<div class="page-hdr">
+    <div><div class="page-title">${title}</div><div class="page-sub">${sub}</div></div>
+    ${btnLabel ? `<button class="btn btn-primary" onclick="${btnAction}">${btnLabel}</button>` : ''}
+  </div>`;
+}
+
+// ============================================================
+// CHARTS (pure CSS bars)
+// ============================================================
+function chartBars(data) {
+  const max = Math.max(...data);
+  return `<div class="chart-placeholder">${data.map(v => `<div class="chart-bar" style="height:${(v/max*90)}%"></div>`).join('')}</div>`;
+}
+
+// ============================================================
+// VIEW: DASHBOARD
+// ============================================================
+function renderDashboard(role) {
+  if (role === 'customer') return renderCustomerDashboard();
+  if (role === 'doctor') return renderDoctorDashboard();
+
+  const isOwner = role === 'owner';
+  return `
+    ${pageHeader('Dashboard', 'Selamat datang, ' + currentUser.name, '', '')}
+    <div class="kpi-row">
+      <div class="kpi-card accent"><div class="kpi-label">Pasien Hari Ini</div><div class="kpi-value">12</div><div class="kpi-change up">↑ 3 dari kemarin</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Appointment Pending</div><div class="kpi-value">5</div><div class="kpi-change">Butuh konfirmasi</div></div>
+      <div class="kpi-card accent-info"><div class="kpi-label">Rawat Inap Aktif</div><div class="kpi-value">2</div><div class="kpi-change">Kamar A-1, B-2</div></div>
+      ${isOwner ? `<div class="kpi-card accent-danger"><div class="kpi-label">Pendapatan Bulan Ini</div><div class="kpi-value" style="font-size:1.3rem;">Rp 18,5Jt</div><div class="kpi-change up">↑ 12% vs bulan lalu</div></div>` : ''}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Appointment Hari Ini 📅
+          <button class="btn btn-ghost btn-sm" onclick="navigateTo('appointments')">Lihat Semua</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Waktu</th><th>Hewan</th><th>Pemilik</th><th>Status</th></tr></thead>
+          <tbody>
+            ${DATA.appointments.slice(0,4).map(a=>`<tr><td><b>${a.time}</b></td><td>${a.pet}</td><td>${a.customer}</td><td>${statusBadge(a.status)}</td></tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Vaksin Jatuh Tempo 💉</div>
+        ${DATA.vaccinations.filter(v=>v.status!=='valid').map(v=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <div>
+              <div style="font-weight:600;font-size:0.87rem;">${v.pet}</div>
+              <div style="font-size:0.78rem;color:var(--ink-soft);">${v.vaccine} — ${v.nextDue}</div>
+            </div>
+            ${statusBadge(v.status)}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Pendapatan 6 Bulan ${isOwner?'📈':''}</div>
+        ${isOwner ? chartBars([12000000,15000000,11000000,18000000,16000000,18500000]) : '<div class="empty-state"><div class="empty-icon">🔒</div><p>Hanya Owner yang dapat melihat data keuangan</p></div>'}
+      </div>
+      <div class="card">
+        <div class="card-title">Stok Menipis 📦</div>
+        ${DATA.inventory.filter(i=>i.stock <= i.minStock).map(i=>`
+          <div style="padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:0.87rem;font-weight:600;">${i.name}</span>
+              <span style="font-size:0.82rem;color:var(--danger);font-weight:700;">${i.stock} ${i.unit}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width:${(i.stock/i.minStock*100)}%;background:var(--danger)"></div></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function renderDoctorDashboard() {
+  return `
+    ${pageHeader('Dashboard Dokter', 'Selamat datang, ' + currentUser.name, '', '')}
+    <div class="kpi-row">
+      <div class="kpi-card accent"><div class="kpi-label">Pasien Hari Ini</div><div class="kpi-value">8</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Menunggu</div><div class="kpi-value">3</div></div>
+      <div class="kpi-card accent-info"><div class="kpi-label">Selesai</div><div class="kpi-value">5</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Antrian Hari Ini</div>
+        ${DATA.appointments.map(a=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <div style="width:36px;height:36px;background:var(--teal-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:var(--teal-dark);">${a.time.split(':')[0]}</div>
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:0.87rem;">${a.pet}</div>
+              <div style="font-size:0.77rem;color:var(--ink-soft);">${a.type}</div>
+            </div>
+            ${statusBadge(a.status)}
+            <button class="btn btn-primary btn-sm" onclick="showToast('Membuka rekam medis...','success')">Periksa</button>
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">Rekam Medis Terbaru</div>
+        ${DATA.medicalRecords.map(r=>`
+          <div style="padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-weight:600;font-size:0.87rem;">${r.pet}</span>
+              <span style="font-size:0.75rem;color:var(--ink-muted);">${r.date}</span>
+            </div>
+            <div style="font-size:0.82rem;color:var(--ink-soft);">${r.diagnosis}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function renderCustomerDashboard() {
+  return `
+    ${pageHeader('Beranda', 'Selamat datang, ' + currentUser.name, '', '')}
+    <div class="kpi-row">
+      <div class="kpi-card accent"><div class="kpi-label">Hewan Saya</div><div class="kpi-value">2</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Appointment Aktif</div><div class="kpi-value">2</div></div>
+      <div class="kpi-card accent-info"><div class="kpi-label">Vaksin Mendatang</div><div class="kpi-value">1</div></div>
+      <div class="kpi-card accent-danger"><div class="kpi-label">Tagihan Belum Lunas</div><div class="kpi-value">0</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Hewan Saya 🐾</div>
+        ${DATA.pets.filter(p=>p.owner==='Budi Santoso').map(p=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <div style="font-size:2rem;">${p.species==='Anjing'?'🐕':'🐈'}</div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:0.9rem;">${p.name}</div><div style="font-size:0.78rem;color:var(--ink-soft);">${p.breed} · ${p.age}</div></div>
+            ${statusBadge('active')}
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">Appointment Berikutnya 📅</div>
+        ${DATA.appointments.filter(a=>a.customer==='Budi Santoso').map(a=>`
+          <div style="background:var(--teal-xpale);border:1px solid var(--teal-pale);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;">
+            <div style="font-weight:700;font-size:0.9rem;">${a.date} — ${a.time}</div>
+            <div style="font-size:0.83rem;color:var(--ink-soft);margin-top:4px;">${a.pet} · ${a.type}</div>
+            <div style="margin-top:6px;">${statusBadge(a.status)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: APPOINTMENTS
+// ============================================================
+function renderAppointments() {
+  const isReadOnly = currentUser.role === 'doctor';
+  return `
+    ${pageHeader('Appointment', 'Kelola jadwal kunjungan hewan', isReadOnly ? '' : '+ Buat Appointment', "openNewAppointment()")}
+    <div class="card">
+      <div class="filter-bar">
+        <div class="search-wrap"><input class="search-input" placeholder="Cari pasien, pemilik..."></div>
+        <select class="form-select" style="width:150px;"><option>Semua Status</option><option>Konfirmasi</option><option>Menunggu</option><option>Selesai</option></select>
+        <input type="date" class="form-control" style="width:160px;" value="2024-06-15">
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tanggal</th><th>Jam</th><th>Hewan</th><th>Pemilik</th><th>Dokter</th><th>Tipe</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.appointments.map(a=>`
+            <tr>
+              <td>${a.date}</td>
+              <td><b>${a.time}</b></td>
+              <td>${a.pet}</td>
+              <td>${a.customer}</td>
+              <td>${a.doctor}</td>
+              <td>${a.type}</td>
+              <td>${statusBadge(a.status)}</td>
+              <td>${actionBtns('appointment')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+function openNewAppointment() {
+  document.getElementById('record-modal-title').textContent = '+ Buat Appointment Baru';
+  document.getElementById('record-modal-body').innerHTML = `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Nama Pelanggan</label><input class="form-control" placeholder="Pilih pelanggan"></div>
+      <div class="form-group"><label class="form-label">Hewan</label><select class="form-select"><option>Max (Labrador)</option><option>Luna (Poodle)</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tanggal</label><input class="form-control" type="date" value="2024-06-15"></div>
+      <div class="form-group"><label class="form-label">Jam</label><input class="form-control" type="time" value="09:00"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Dokter</label><select class="form-select"><option>Dr. Ahmad Fauzi</option></select></div>
+      <div class="form-group"><label class="form-label">Jenis Kunjungan</label><select class="form-select"><option>Pemeriksaan Umum</option><option>Vaksinasi</option><option>Kontrol</option><option>Grooming</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Keluhan / Catatan</label><textarea class="form-control" placeholder="Tuliskan keluhan atau catatan tambahan..."></textarea></div>
+  `;
+  openModal('record-modal');
+}
+
+// ============================================================
+// VIEW: MEDICAL RECORDS
+// ============================================================
+function renderMedicalRecords() {
+  return `
+    ${pageHeader('Rekam Medis', 'Riwayat pemeriksaan semua hewan', '+ Rekam Medis Baru', "openNewMedical()")}
+    <div class="card">
+      <div class="filter-bar">
+        <div class="search-wrap"><input class="search-input" placeholder="Cari hewan, diagnosa..."></div>
+        <select class="form-select" style="width:160px;"><option>Semua</option><option>Selesai</option><option>Follow Up</option></select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tanggal</th><th>Hewan</th><th>Pemilik</th><th>Dokter</th><th>Keluhan</th><th>Diagnosa</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.medicalRecords.map(r=>`
+            <tr>
+              <td>${r.date}</td>
+              <td><b>${r.pet}</b></td>
+              <td>${r.owner}</td>
+              <td>${r.doctor}</td>
+              <td style="max-width:150px;">${r.complaint}</td>
+              <td style="max-width:150px;">${r.diagnosis}</td>
+              <td>${statusBadge(r.status)}</td>
+              <td>${actionBtns('rekam medis')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+function openNewMedical() {
+  document.getElementById('record-modal-title').textContent = '+ Rekam Medis Baru';
+  document.getElementById('record-modal-body').innerHTML = `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Hewan</label><select class="form-select"><option>Max (Labrador) — Budi</option><option>Luna (Poodle) — Sari</option></select></div>
+      <div class="form-group"><label class="form-label">Tanggal Pemeriksaan</label><input class="form-control" type="date" value="2024-06-15"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Keluhan Utama</label><textarea class="form-control" placeholder="Keluhan pemilik hewan..."></textarea></div>
+    <div class="form-group"><label class="form-label">Diagnosa</label><textarea class="form-control" placeholder="Diagnosa dokter..."></textarea></div>
+    <div class="form-group"><label class="form-label">Tindakan / Treatment</label><textarea class="form-control" placeholder="Tindakan yang dilakukan..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Berat Badan (kg)</label><input class="form-control" type="number" placeholder="28"></div>
+      <div class="form-group"><label class="form-label">Suhu Tubuh (°C)</label><input class="form-control" type="number" placeholder="38.5"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Resep / Obat</label><textarea class="form-control" placeholder="Resep yang diberikan..."></textarea></div>
+    <div class="form-group"><label class="form-label">Catatan Tambahan</label><textarea class="form-control" placeholder="Catatan atau instruksi perawatan..."></textarea></div>
+  `;
+  openModal('record-modal');
+}
+
+// ============================================================
+// VIEW: VACCINATION
+// ============================================================
+function renderVaccination() {
+  return `
+    ${pageHeader('Vaksinasi', 'Riwayat dan jadwal vaksin hewan', '+ Catat Vaksinasi', "openModal('record-modal')")}
+    <div class="kpi-row" style="margin-bottom:20px;">
+      <div class="kpi-card accent"><div class="kpi-label">Valid</div><div class="kpi-value">${DATA.vaccinations.filter(v=>v.status==='valid').length}</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Jatuh Tempo</div><div class="kpi-value">${DATA.vaccinations.filter(v=>v.status==='due').length}</div></div>
+      <div class="kpi-card accent-danger"><div class="kpi-label">Terlambat</div><div class="kpi-value">${DATA.vaccinations.filter(v=>v.status==='overdue').length}</div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Hewan</th><th>Pemilik</th><th>Vaksin</th><th>Tanggal</th><th>Jatuh Tempo</th><th>Dokter</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.vaccinations.map(v=>`
+            <tr>
+              <td><b>${v.pet}</b></td>
+              <td>${v.owner}</td>
+              <td>${v.vaccine}</td>
+              <td>${v.date}</td>
+              <td><b>${v.nextDue}</b></td>
+              <td>${v.doctor}</td>
+              <td>${statusBadge(v.status)}</td>
+              <td><button class="btn btn-primary btn-sm" onclick="showToast('Reminder terkirim ke WhatsApp!','success')">📲 Reminder</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: MONITORING
+// ============================================================
+function renderMonitoring() {
+  return `
+    ${pageHeader('Monitoring', 'Pantau kondisi hewan yang dirawat', '+ Monitor Baru', "openModal('record-modal')")}
+    <div class="grid-2">
+      ${DATA.inpatients.map(p=>`
+        <div class="card">
+          <div class="card-title">${p.pet} <span class="badge badge-info">Kamar ${p.room}</span></div>
+          <div class="info-row"><div class="info-label">Pemilik</div><div class="info-value">${p.owner}</div></div>
+          <div class="info-row"><div class="info-label">Alasan Rawat</div><div class="info-value">${p.reason}</div></div>
+          <div class="info-row"><div class="info-label">Hari ke-</div><div class="info-value">${p.days}</div></div>
+          <div style="margin-top:16px;">
+            <div style="font-size:0.82rem;font-weight:700;color:var(--ink-soft);margin-bottom:10px;">CATATAN HARIAN</div>
+            <div class="timeline">
+              <div class="tl-item"><div class="tl-date">2024-06-15 08:00</div><div class="tl-content"><div class="tl-title">Kondisi Stabil</div><div class="tl-body">Makan dengan baik, suhu normal 38.2°C. Luka menunjukkan tanda-tanda penyembuhan.</div></div></div>
+              <div class="tl-item"><div class="tl-date">2024-06-14 08:00</div><div class="tl-content"><div class="tl-title">Pemberian Infus</div><div class="tl-body">Infus NaCl 250ml. Masih sedikit pincang namun membaik dari kemarin.</div></div></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <button class="btn btn-primary btn-sm" onclick="showToast('Update kondisi tersimpan!','success')">+ Catat Update</button>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Notifikasi terkirim ke pemilik!','success')">📲 Notify Owner</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+// ============================================================
+// VIEW: INPATIENT
+// ============================================================
+function renderInpatient() {
+  return `
+    ${pageHeader('Rawat Inap', 'Kelola pasien rawat inap', '+ Masuk Rawat Inap', "openModal('record-modal')")}
+    <div class="kpi-row" style="margin-bottom:20px;">
+      <div class="kpi-card accent"><div class="kpi-label">Pasien Aktif</div><div class="kpi-value">${DATA.inpatients.length}</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Kamar Terisi</div><div class="kpi-value">2</div></div>
+      <div class="kpi-card accent-info"><div class="kpi-label">Kamar Tersedia</div><div class="kpi-value">4</div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Hewan</th><th>Pemilik</th><th>Kamar</th><th>Masuk</th><th>Hari ke-</th><th>Alasan</th><th>Dokter</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.inpatients.map(i=>`
+            <tr>
+              <td><b>${i.pet}</b></td>
+              <td>${i.owner}</td>
+              <td><span class="badge badge-teal">${i.room}</span></td>
+              <td>${i.admitted}</td>
+              <td><b>${i.days}</b></td>
+              <td>${i.reason}</td>
+              <td>${i.doctor}</td>
+              <td><button class="btn btn-success btn-sm" onclick="showToast('Pasien dipulangkan!','success')">Pulangkan</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: CUSTOMERS
+// ============================================================
+function renderCustomers() {
+  return `
+    ${pageHeader('Data Pelanggan', currentUser.role === 'owner' ? DATA.customers.length + ' pelanggan terdaftar' : 'Kelola data pemilik hewan', '+ Pelanggan Baru', "openModal('record-modal')")}
+    <div class="card">
+      <div class="filter-bar">
+        <div class="search-wrap"><input class="search-input" placeholder="Cari nama, email, nomor HP..."></div>
+        <select class="form-select" style="width:150px;"><option>Semua Status</option><option>Aktif</option><option>Nonaktif</option></select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Nama</th><th>No. HP</th><th>Email</th><th>Jml Hewan</th><th>Kunjungan Terakhir</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.customers.map(c=>`
+            <tr>
+              <td><div class="inline-flex"><div class="avatar avatar-sm">${c.name[0]}</div><b>${c.name}</b></div></td>
+              <td>${c.phone}</td>
+              <td>${c.email}</td>
+              <td><span class="badge badge-teal">${c.pets} hewan</span></td>
+              <td>${c.lastVisit}</td>
+              <td>${statusBadge(c.status)}</td>
+              <td>${actionBtns('pelanggan')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: PETS
+// ============================================================
+function renderPets() {
+  return `
+    ${pageHeader('Data Hewan', DATA.pets.length + ' hewan terdaftar', '+ Daftarkan Hewan', "openModal('record-modal')")}
+    <div class="card">
+      <div class="filter-bar">
+        <div class="search-wrap"><input class="search-input" placeholder="Cari nama hewan, ras, pemilik..."></div>
+        <select class="form-select" style="width:150px;"><option>Semua Spesies</option><option>Anjing</option><option>Kucing</option></select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Nama</th><th>Spesies</th><th>Ras</th><th>Usia</th><th>Gender</th><th>Berat</th><th>Pemilik</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.pets.map(p=>`
+            <tr>
+              <td><div class="inline-flex"><span style="font-size:1.3rem;">${p.species==='Anjing'?'🐕':'🐈'}</span><b>${p.name}</b></div></td>
+              <td>${p.species}</td>
+              <td>${p.breed}</td>
+              <td>${p.age}</td>
+              <td>${p.gender}</td>
+              <td>${p.weight}</td>
+              <td>${p.owner}</td>
+              <td>${statusBadge(p.status==='Sehat'?'active':p.status==='Rawat Inap'?'info':'warn')}</td>
+              <td>${actionBtns('hewan')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: GROOMING
+// ============================================================
+function renderGrooming() {
+  return `
+    ${pageHeader('Grooming', 'Kelola layanan grooming', '+ Jadwal Grooming', "openModal('record-modal')")}
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tanggal</th><th>Hewan</th><th>Pemilik</th><th>Layanan</th><th>Staff</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.grooming.map(g=>`
+            <tr>
+              <td>${g.date}</td>
+              <td><b>${g.pet}</b></td>
+              <td>${g.owner}</td>
+              <td>${g.services}</td>
+              <td>${g.staff}</td>
+              <td><b>${g.price}</b></td>
+              <td>${statusBadge(g.status)}</td>
+              <td>
+                ${g.status==='in-progress'?`<button class="btn btn-success btn-sm" onclick="showToast('Grooming selesai! WA terkirim ke pemilik.','success')">✓ Selesai</button>`:actionBtns('grooming')}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: INVENTORY
+// ============================================================
+function renderInventory() {
+  return `
+    ${pageHeader('Inventori', 'Stok obat dan alat medis', '+ Tambah Item', "openModal('record-modal')")}
+    <div class="kpi-row" style="margin-bottom:20px;">
+      <div class="kpi-card accent"><div class="kpi-label">Total Item</div><div class="kpi-value">${DATA.inventory.length}</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Stok Menipis</div><div class="kpi-value">${DATA.inventory.filter(i=>i.stock<=i.minStock).length}</div></div>
+      <div class="kpi-card accent-danger"><div class="kpi-label">Hampir Kadaluarsa</div><div class="kpi-value">1</div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Nama Item</th><th>Kategori</th><th>Stok</th><th>Min. Stok</th><th>Kadaluarsa</th><th>Harga Satuan</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.inventory.map(i=>`
+            <tr>
+              <td><b>${i.name}</b></td>
+              <td>${i.category}</td>
+              <td style="color:${i.stock<=i.minStock?'var(--danger)':'inherit'};font-weight:${i.stock<=i.minStock?'700':'400'};">${i.stock} ${i.unit}</td>
+              <td>${i.minStock} ${i.unit}</td>
+              <td>${i.expiry}</td>
+              <td>${i.price}</td>
+              <td>${i.stock<=i.minStock?statusBadge('overdue'):'<span class="badge badge-success">OK</span>'}</td>
+              <td>${actionBtns('stok')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: PRODUCTS
+// ============================================================
+function renderProducts() {
+  return `
+    ${pageHeader('Produk Petshop', DATA.products.length + ' produk tersedia', '+ Produk Baru', "openModal('record-modal')")}
+    <div class="card">
+      <div class="filter-bar">
+        <div class="search-wrap"><input class="search-input" placeholder="Cari produk..."></div>
+        <select class="form-select" style="width:150px;"><option>Semua Kategori</option><option>Makanan</option><option>Perawatan</option><option>Aksesori</option><option>Obat</option></select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.products.map(p=>`
+            <tr>
+              <td><div class="inline-flex"><span style="font-size:1.4rem;">${p.icon}</span><b>${p.name}</b></div></td>
+              <td>${p.category}</td>
+              <td><b>${fmt(p.price)}</b></td>
+              <td>${p.stock}</td>
+              <td>${p.stock>10?statusBadge('active'):'<span class="badge badge-warn">Stok Rendah</span>'}</td>
+              <td>${actionBtns('produk')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: POS (KASIR)
+// ============================================================
+function renderPOS() {
+  return `
+    ${pageHeader('Kasir (POS)', 'Proses transaksi petshop', '', '')}
+    <div class="pos-layout">
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="filter-bar" style="margin-bottom:0;">
+            <div class="search-wrap" style="flex:1;"><input class="search-input" id="pos-search" placeholder="Cari produk..."></div>
+            <select class="form-select" style="width:150px;"><option>Semua</option><option>Makanan</option><option>Perawatan</option><option>Aksesori</option></select>
+          </div>
+        </div>
+        <div class="pos-products" id="pos-grid">
+          ${DATA.products.map(p=>`
+            <div class="pos-product" onclick="addToCart(${p.id})">
+              <div class="pos-product-icon">${p.icon}</div>
+              <div class="pos-product-name">${p.name}</div>
+              <div class="pos-product-price">${fmt(p.price)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="pos-cart">
+        <div class="pos-cart-header">🛒 Keranjang Belanja</div>
+        <div class="pos-cart-items" id="cart-items"><div class="empty-state" style="padding:30px 20px;"><div class="empty-icon">🛒</div><p>Klik produk untuk menambahkan</p></div></div>
+        <div class="pos-cart-footer">
+          <div style="margin-bottom:10px;">
+            <div class="form-group"><label class="form-label">Pelanggan</label><select class="form-select"><option>-- Umum --</option>${DATA.customers.map(c=>`<option>${c.name}</option>`).join('')}</select></div>
+          </div>
+          <div class="pos-total"><span>Total</span><span id="cart-total">Rp 0</span></div>
+          <button class="btn btn-primary" style="width:100%;" onclick="openPaymentModal()">💳 Proses Pembayaran</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function attachPOSListeners() {
+  renderCart();
+}
+
+function addToCart(productId) {
+  const p = DATA.products.find(x => x.id === productId);
+  if (!p) return;
+  const existing = cart.find(c => c.id === productId);
+  if (existing) { existing.qty++; }
+  else { cart.push({ ...p, qty: 1 }); }
+  renderCart();
+  showToast(`${p.name} ditambahkan`, 'success');
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-items');
+  const totalEl = document.getElementById('cart-total');
+  if (!container) return;
+  if (cart.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:30px 20px;"><div class="empty-icon">🛒</div><p>Klik produk untuk menambahkan</p></div>';
+    if (totalEl) totalEl.textContent = 'Rp 0';
+    return;
+  }
+  container.innerHTML = cart.map((c, i) => `
+    <div class="pos-cart-item">
+      <span class="pos-cart-item-name">${c.icon} ${c.name}</span>
+      <div class="pos-cart-item-qty">
+        <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+        <span>${c.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button>
+      </div>
+      <span style="font-weight:700;font-size:0.82rem;color:var(--teal);">${fmt(c.price * c.qty)}</span>
+    </div>
+  `).join('');
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  if (totalEl) totalEl.textContent = fmt(total);
+}
+
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  renderCart();
+}
+
+function openPaymentModal() {
+  if (cart.length === 0) { showToast('Keranjang masih kosong', 'error'); return; }
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  document.getElementById('payment-modal-body').innerHTML = `
+    <div style="margin-bottom:16px;">
+      ${cart.map(c => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:0.87rem;"><span>${c.icon} ${c.name} x${c.qty}</span><span>${fmt(c.price*c.qty)}</span></div>`).join('')}
+      <div style="display:flex;justify-content:space-between;padding:12px 0;font-size:1.05rem;font-weight:800;"><span>TOTAL</span><span>${fmt(total)}</span></div>
+    </div>
+    <div class="form-group"><label class="form-label">Metode Pembayaran</label>
+      <select class="form-select"><option>Tunai</option><option>Transfer Bank</option><option>QRIS</option><option>Kartu Debit/Kredit</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Jumlah Bayar</label><input class="form-control" type="number" placeholder="${total}" value="${total}"></div>
+  `;
+  openModal('payment-modal');
+}
+
+function processPayment() {
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  cart = [];
+  closeModal('payment-modal');
+  renderCart();
+  showToast(`✓ Pembayaran ${fmt(total)} berhasil! Invoice dibuat.`, 'success');
+}
+
+// ============================================================
+// VIEW: INVOICES
+// ============================================================
+function renderInvoices() {
+  return `
+    ${pageHeader('Invoice', 'Daftar semua tagihan', '+ Buat Invoice', "openModal('record-modal')")}
+    <div class="card">
+      <div class="filter-bar">
+        <div class="search-wrap"><input class="search-input" placeholder="Cari no. invoice, pelanggan..."></div>
+        <select class="form-select" style="width:150px;"><option>Semua</option><option>Lunas</option><option>Belum Bayar</option></select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>No. Invoice</th><th>Tanggal</th><th>Pelanggan</th><th>Layanan</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.invoices.map(i=>`
+            <tr>
+              <td><b>${i.id}</b></td>
+              <td>${i.date}</td>
+              <td>${i.customer}</td>
+              <td>${i.services}</td>
+              <td><b>${i.amount}</b></td>
+              <td>${statusBadge(i.status)}</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-ghost btn-sm" onclick="showToast('Invoice dicetak!','success')">🖨 Cetak</button>
+                  ${i.status==='unpaid'?`<button class="btn btn-success btn-sm" onclick="showToast('Invoice ditandai lunas!','success')">✓ Lunas</button>`:''}
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: ACCOUNTING
+// ============================================================
+function renderAccounting() {
+  const isOwner = currentUser.role === 'owner';
+  if (!isOwner) return `<div class="empty-state"><div class="empty-icon">🔒</div><h3>Akses Terbatas</h3><p>Modul Akuntansi hanya dapat diakses oleh Owner.</p></div>`;
+  return `
+    ${pageHeader('Akuntansi', 'Pencatatan keuangan klinik', '+ Catat Transaksi', "openModal('record-modal')")}
+    <div class="kpi-row">
+      <div class="kpi-card accent"><div class="kpi-label">Pendapatan Bulan Ini</div><div class="kpi-value" style="font-size:1.3rem;">Rp 18,5Jt</div><div class="kpi-change up">↑ 12%</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Pengeluaran</div><div class="kpi-value" style="font-size:1.3rem;">Rp 6,2Jt</div><div class="kpi-change down">↑ 5%</div></div>
+      <div class="kpi-card accent-info"><div class="kpi-label">Profit Bersih</div><div class="kpi-value" style="font-size:1.3rem;">Rp 12,3Jt</div><div class="kpi-change up">↑ 18%</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Arus Kas 6 Bulan 📊</div>
+      ${chartBars([8500000, 11000000, 9200000, 14500000, 12800000, 12300000])}
+      <div style="display:flex;justify-content:center;gap:20px;margin-top:10px;font-size:0.8rem;color:var(--ink-soft);">
+        <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>Mei</span><span>Jun</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Transaksi Terbaru</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Tipe</th><th>Jumlah</th></tr></thead>
+        <tbody>
+          <tr><td>2024-06-15</td><td>Pembayaran Pemeriksaan — Max</td><td><span class="badge badge-success">Masuk</span></td><td style="color:var(--success);font-weight:700;">+ Rp 350.000</td></tr>
+          <tr><td>2024-06-15</td><td>Beli Stok Amoxicillin</td><td><span class="badge badge-danger">Keluar</span></td><td style="color:var(--danger);font-weight:700;">− Rp 420.000</td></tr>
+          <tr><td>2024-06-14</td><td>Pembayaran Grooming — Luna</td><td><span class="badge badge-success">Masuk</span></td><td style="color:var(--success);font-weight:700;">+ Rp 200.000</td></tr>
+          <tr><td>2024-06-14</td><td>Tagihan Listrik</td><td><span class="badge badge-danger">Keluar</span></td><td style="color:var(--danger);font-weight:700;">− Rp 850.000</td></tr>
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: REPORTS
+// ============================================================
+function renderReports() {
+  if (currentUser.role !== 'owner') return `<div class="empty-state"><div class="empty-icon">🔒</div><h3>Akses Terbatas</h3><p>Laporan hanya dapat diakses oleh Owner.</p></div>`;
+  return `
+    ${pageHeader('Laporan & Analitik', 'Insight bisnis klinik Anda', '', '')}
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'tab-clinical')">🏥 Klinis</div>
+      <div class="tab" onclick="switchTab(this,'tab-financial')">💰 Finansial</div>
+      <div class="tab" onclick="switchTab(this,'tab-inventory')">📦 Inventori</div>
+      <div class="tab" onclick="switchTab(this,'tab-product')">🛍️ Produk</div>
+    </div>
+    <div id="tab-clinical" class="tab-panel active">
+      <div class="grid-3">
+        <div class="kpi-card accent"><div class="kpi-label">Total Pasien Bulan Ini</div><div class="kpi-value">187</div><div class="kpi-change up">↑ 23 dari bulan lalu</div></div>
+        <div class="kpi-card accent-info"><div class="kpi-label">Kunjungan Baru</div><div class="kpi-value">42</div></div>
+        <div class="kpi-card accent-warn"><div class="kpi-label">Kunjungan Ulang</div><div class="kpi-value">145</div></div>
+      </div>
+      <div class="grid-2" style="margin-top:20px;">
+        <div class="card"><div class="card-title">Diagnosa Terbanyak</div>
+          ${[['Gastritis',45],['Infeksi Kulit',32],['Vaksinasi Rutin',28],['Ligamen/Sendi',15],['ISPA',12]].map(([d,n])=>`
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="flex:1;font-size:0.87rem;">${d}</div>
+              <div style="width:120px;"><div class="progress"><div class="progress-bar" style="width:${n/45*100}%"></div></div></div>
+              <div style="font-size:0.82rem;font-weight:700;color:var(--teal);width:30px;text-align:right;">${n}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="card"><div class="card-title">Aktivitas Dokter</div>
+          <div class="info-row"><div class="info-label">Dr. Ahmad Fauzi</div><div class="info-value">187 pasien</div></div>
+          <div style="font-size:0.82rem;color:var(--ink-soft);margin:16px 0 8px;">Distribusi Tindakan:</div>
+          ${[['Pemeriksaan',45],['Vaksinasi',25],['Rawat Inap',15],['Operasi',10],['Lainnya',5]].map(([t,p])=>`
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <div style="font-size:0.83rem;width:110px;">${t}</div>
+              <div style="flex:1;"><div class="progress"><div class="progress-bar" style="width:${p}%"></div></div></div>
+              <div style="font-size:0.8rem;color:var(--ink-soft);">${p}%</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    <div id="tab-financial" class="tab-panel">
+      <div class="grid-3">
+        <div class="kpi-card accent"><div class="kpi-label">Revenue Bulan Ini</div><div class="kpi-value" style="font-size:1.3rem;">Rp 18,5Jt</div></div>
+        <div class="kpi-card accent-warn"><div class="kpi-label">Expense</div><div class="kpi-value" style="font-size:1.3rem;">Rp 6,2Jt</div></div>
+        <div class="kpi-card accent-info"><div class="kpi-label">Profit</div><div class="kpi-value" style="font-size:1.3rem;">Rp 12,3Jt</div></div>
+      </div>
+      <div class="card" style="margin-top:20px;"><div class="card-title">Revenue Trend</div>${chartBars([12000000,15000000,11000000,18000000,16000000,18500000])}</div>
+    </div>
+    <div id="tab-inventory" class="tab-panel">
+      <div class="grid-3">
+        <div class="kpi-card accent-warn"><div class="kpi-label">Stok Menipis</div><div class="kpi-value">3</div></div>
+        <div class="kpi-card accent-danger"><div class="kpi-label">Hampir Kadaluarsa</div><div class="kpi-value">1</div></div>
+        <div class="kpi-card accent"><div class="kpi-label">Total SKU</div><div class="kpi-value">47</div></div>
+      </div>
+      <div class="card" style="margin-top:20px;"><div class="card-title">Penggunaan Stok Tertinggi (Bulan Ini)</div>
+        ${[['Amoxicillin 250mg','Antibiotik',80],['Infus NaCl','Cairan',45],['Jarum Suntik','Alat',200],['Vitamin B','Suplemen',30]].map(([n,c,u])=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border-light);">
+            <div style="flex:1;"><div style="font-weight:600;font-size:0.87rem;">${n}</div><div style="font-size:0.77rem;color:var(--ink-soft);">${c}</div></div>
+            <span class="badge badge-teal">${u} unit</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div id="tab-product" class="tab-panel">
+      <div class="card"><div class="card-title">Produk Terlaris</div>
+        ${DATA.products.slice(0,5).map((p,i)=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <div style="width:24px;height:24px;background:var(--teal);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;">${i+1}</div>
+            <span style="font-size:1.2rem;">${p.icon}</span>
+            <div style="flex:1;font-size:0.87rem;font-weight:600;">${p.name}</div>
+            <span style="font-size:0.82rem;font-weight:700;color:var(--teal);">${fmt(p.price * (50-i*8))}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function switchTab(tabEl, panelId) {
+  tabEl.closest('.view').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tabEl.closest('.view').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.getElementById(panelId)?.classList.add('active');
+}
+
+// ============================================================
+// VIEW: USER MANAGEMENT
+// ============================================================
+function renderUsers() {
+  if (currentUser.role !== 'owner') return `<div class="empty-state"><div class="empty-icon">🔒</div><h3>Akses Terbatas</h3><p>Manajemen Pengguna hanya untuk Owner.</p></div>`;
+  return `
+    ${pageHeader('Manajemen Pengguna', '4 role aktif: Owner, Dokter, Staff, Customer', '+ Tambah Pengguna', "openModal('record-modal')")}
+    <div class="kpi-row" style="margin-bottom:20px;">
+      <div class="kpi-card accent"><div class="kpi-label">Owner</div><div class="kpi-value">1</div></div>
+      <div class="kpi-card accent-info"><div class="kpi-label">Dokter</div><div class="kpi-value">1</div></div>
+      <div class="kpi-card accent-warn"><div class="kpi-label">Staff</div><div class="kpi-value">1</div></div>
+      <div class="kpi-card" style="border-left:4px solid #6b21a8;"><div class="kpi-label">Customer</div><div class="kpi-value">1</div></div>
+    </div>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Status</th><th>Login Terakhir</th><th>Aksi</th></tr></thead>
+        <tbody>
+          ${DATA.users.map(u=>`
+            <tr>
+              <td><div class="inline-flex"><div class="avatar">${u.name[0]}</div><b>${u.name}</b></div></td>
+              <td>${u.email}</td>
+              <td>${statusBadge(u.role)}</td>
+              <td>${statusBadge(u.status)}</td>
+              <td>${u.lastLogin}</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-ghost btn-sm" onclick="showToast('Mengedit pengguna...','success')">Edit</button>
+                  ${u.email!==currentUser.email?`<button class="btn btn-danger btn-sm" onclick="showToast('Status pengguna diperbarui','warn')">Non-aktifkan</button>`:'<span style="font-size:0.78rem;color:var(--ink-muted);">Anda sendiri</span>'}
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card" style="background:var(--teal-xpale);border-color:var(--teal-pale);">
+      <div style="font-size:0.87rem;color:var(--teal-dark);line-height:1.8;">
+        <b>🔒 Kebijakan Role:</b><br>
+        Platform hanya mendukung tepat <b>4 role</b> (Owner, Dokter, Staff, Customer) sesuai spesifikasi PetCare Suite v3.0. Penambahan role baru memerlukan revisi spesifikasi resmi.
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// VIEW: SETTINGS
+// ============================================================
+function renderSettings() {
+  if (currentUser.role !== 'owner') return `<div class="empty-state"><div class="empty-icon">🔒</div><h3>Akses Terbatas</h3><p>Pengaturan hanya untuk Owner.</p></div>`;
+  return `
+    ${pageHeader('Pengaturan', 'Konfigurasi klinik dan modul', '', '')}
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Informasi Klinik</div>
+        <div class="form-group"><label class="form-label">Nama Klinik</label><input class="form-control" value="Klinik Hewan Sehat Sejahtera"></div>
+        <div class="form-group"><label class="form-label">Alamat</label><textarea class="form-control">Jl. Merdeka No. 45, Jakarta Selatan</textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Telepon</label><input class="form-control" value="021-12345678"></div>
+          <div class="form-group"><label class="form-label">WhatsApp</label><input class="form-control" value="081234567890"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email Klinik</label><input class="form-control" value="info@kliniksehat.id"></div>
+        <button class="btn btn-primary" onclick="showToast('Informasi klinik disimpan!','success')">Simpan Perubahan</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Aktivasi Modul</div>
+        <p style="font-size:0.83rem;color:var(--ink-soft);margin-bottom:16px;">Aktifkan atau nonaktifkan modul sesuai kebutuhan bisnis. Data tetap tersimpan saat modul dinonaktifkan.</p>
+        ${[['🏥','Clinic','Modul klinis utama',true],['🩺','Monitoring','Monitoring kondisi hewan',true],['🛏','Inpatient','Rawat inap',true],['✂️','Grooming','Layanan grooming',true],['🛍','Petshop','Toko produk hewan',true],['📦','Inventory','Manajemen stok',true],['💰','Accounting','Akuntansi & keuangan',true],['🌐','Website','Website publik klinik',true]].map(([icon,name,desc,active])=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <span style="font-size:1.4rem;">${icon}</span>
+            <div style="flex:1;"><div style="font-weight:600;font-size:0.87rem;">${name}</div><div style="font-size:0.77rem;color:var(--ink-soft);">${desc}</div></div>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+              <input type="checkbox" ${active?'checked':''} onchange="showToast('Modul ${name} ' + (this.checked ? 'diaktifkan' : 'dinonaktifkan') + '!','success')">
+              <span style="font-size:0.8rem;">${active?'Aktif':'Nonaktif'}</span>
+            </label>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Notifikasi</div>
+      <div class="grid-2">
+        <div>
+          <div style="font-weight:700;font-size:0.85rem;margin-bottom:12px;">WhatsApp</div>
+          ${[['Konfirmasi Appointment',true],['Reminder Vaksin',true],['Selesai Grooming',true],['Notifikasi Invoice',true],['Update Rawat Inap',true]].map(([n,a])=>`
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:0.87rem;">
+              <span>${n}</span>
+              <input type="checkbox" ${a?'checked':''}>
+            </div>
+          `).join('')}
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:0.85rem;margin-bottom:12px;">Email</div>
+          ${[['Konfirmasi Appointment',true],['Reminder Vaksin',true],['Notifikasi Invoice',false]].map(([n,a])=>`
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:0.87rem;">
+              <span>${n}</span>
+              <input type="checkbox" ${a?'checked':''}>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="showToast('Pengaturan notifikasi disimpan!','success')">Simpan Notifikasi</button>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// CUSTOMER PORTAL VIEWS
+// ============================================================
+function renderMyPets() {
+  const myPets = DATA.pets.filter(p => p.owner === 'Budi Santoso');
+  return `
+    ${pageHeader('Hewan Saya', myPets.length + ' hewan terdaftar', '+ Daftarkan Hewan Baru', "showToast('Hubungi klinik untuk mendaftarkan hewan baru.','success')")}
+    <div class="grid-2">
+      ${myPets.map(p=>`
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+            <div style="font-size:3rem;">${p.species==='Anjing'?'🐕':'🐈'}</div>
+            <div><div style="font-size:1.2rem;font-weight:800;">${p.name}</div><div style="color:var(--ink-soft);font-size:0.87rem;">${p.breed}</div></div>
+            ${statusBadge('active')}
+          </div>
+          <div class="info-row"><div class="info-label">Spesies</div><div class="info-value">${p.species}</div></div>
+          <div class="info-row"><div class="info-label">Usia</div><div class="info-value">${p.age}</div></div>
+          <div class="info-row"><div class="info-label">Gender</div><div class="info-value">${p.gender}</div></div>
+          <div class="info-row"><div class="info-label">Berat</div><div class="info-value">${p.weight}</div></div>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="navigateTo('my-medical')">📋 Rekam Medis</button>
+            <button class="btn btn-ghost btn-sm" onclick="navigateTo('my-vaccination')">💉 Vaksinasi</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function renderMyAppointments() {
+  const myAppts = DATA.appointments.filter(a => a.customer === 'Budi Santoso');
+  return `
+    ${pageHeader('Jadwal Kunjungan', 'Appointment aktif dan riwayat kunjungan', '+ Buat Appointment', "openNewAppointment()")}
+    ${myAppts.map(a=>`
+      <div class="card" style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="text-align:center;background:var(--teal-pale);border-radius:var(--radius);padding:12px 16px;min-width:70px;">
+          <div style="font-size:1.4rem;font-weight:800;color:var(--teal-dark);">${a.date.split('-')[2]}</div>
+          <div style="font-size:0.75rem;color:var(--teal);font-weight:600;">Jun 2024</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:1rem;">${a.type}</div>
+          <div style="font-size:0.85rem;color:var(--ink-soft);margin-top:4px;">${a.pet} · ${a.time} · ${a.doctor}</div>
+        </div>
+        ${statusBadge(a.status)}
+        ${a.status==='confirmed'?`<button class="btn btn-danger btn-sm" onclick="showToast('Appointment dibatalkan','warn')">Batal</button>`:''}
+      </div>
+    `).join('')}`;
+}
+
+function renderMyMedical() {
+  return `
+    ${pageHeader('Rekam Medis', 'Riwayat pemeriksaan hewan saya', '', '')}
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'tab-max')">🐕 Max</div>
+      <div class="tab" onclick="switchTab(this,'tab-bella')">🐕 Bella</div>
+    </div>
+    <div id="tab-max" class="tab-panel active">
+      <div class="timeline">
+        ${DATA.medicalRecords.filter(r=>r.owner==='Budi Santoso').map(r=>`
+          <div class="tl-item">
+            <div class="tl-date">${r.date}</div>
+            <div class="tl-content">
+              <div class="tl-title">${r.diagnosis}</div>
+              <div class="tl-body">
+                <b>Keluhan:</b> ${r.complaint}<br>
+                <b>Tindakan:</b> ${r.treatment}<br>
+                <b>Dokter:</b> ${r.doctor}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div id="tab-bella" class="tab-panel">
+      <div class="empty-state"><div class="empty-icon">📋</div><h3>Belum ada rekam medis</h3><p>Bella belum pernah melakukan kunjungan ke klinik.</p></div>
+    </div>`;
+}
+
+function renderMyVaccination() {
+  const myVax = DATA.vaccinations.filter(v => v.owner === 'Budi Santoso');
+  return `
+    ${pageHeader('Vaksinasi', 'Status vaksin hewan saya', '', '')}
+    ${myVax.map(v=>`
+      <div class="card" style="display:flex;align-items:center;gap:16px;">
+        <div style="font-size:2.5rem;">💉</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:1rem;">${v.vaccine}</div>
+          <div style="font-size:0.85rem;color:var(--ink-soft);">Hewan: ${v.pet} · Tanggal: ${v.date}</div>
+          <div style="font-size:0.85rem;margin-top:4px;">Jatuh tempo selanjutnya: <b>${v.nextDue}</b></div>
+        </div>
+        ${statusBadge(v.status)}
+      </div>
+    `).join('')}
+    <div class="card" style="background:var(--warn-light);border-color:#f9c784;">
+      <div style="font-size:0.87rem;color:#a05c00;"><b>⚠️ Pengingat:</b> Vaksin yang terlambat dapat membahayakan kesehatan hewan. Segera hubungi klinik untuk menjadwalkan vaksinasi.</div>
+    </div>`;
+}
+
+function renderMyInvoices() {
+  const myInv = DATA.invoices.filter(i => i.customer === 'Budi Santoso');
+  return `
+    ${pageHeader('Invoice Saya', 'Tagihan dan riwayat pembayaran', '', '')}
+    ${myInv.length === 0 ? '<div class="empty-state"><div class="empty-icon">📄</div><h3>Tidak ada invoice</h3></div>' :
+    myInv.map(i=>`
+      <div class="card" style="display:flex;align-items:center;gap:16px;">
+        <div style="font-size:2rem;">📄</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;">${i.id}</div>
+          <div style="font-size:0.85rem;color:var(--ink-soft);">${i.date} · ${i.services}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:800;font-size:1.05rem;">${i.amount}</div>
+          <div style="margin-top:4px;">${statusBadge(i.status)}</div>
+        </div>
+        ${i.status==='unpaid'?`<button class="btn btn-success btn-sm" onclick="showToast('Menuju halaman pembayaran...','success')">Bayar</button>`:''}
+      </div>
+    `).join('')}`;
+}
+
+function renderMyProfile() {
+  return `
+    ${pageHeader('Profil Saya', 'Kelola data akun Anda', '', '')}
+    <div class="grid-2">
+      <div class="card">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div class="avatar" style="width:70px;height:70px;font-size:1.8rem;margin:0 auto 12px;">B</div>
+          <div style="font-size:1.15rem;font-weight:800;">Budi Santoso</div>
+          <div style="color:var(--ink-soft);font-size:0.87rem;">Pemilik Hewan</div>
+        </div>
+        <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-control" value="Budi Santoso"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-control" value="budi@gmail.com" type="email"></div>
+        <div class="form-group"><label class="form-label">No. HP / WhatsApp</label><input class="form-control" value="081234567890"></div>
+        <div class="form-group"><label class="form-label">Alamat</label><textarea class="form-control">Jl. Sudirman No. 12, Jakarta</textarea></div>
+        <button class="btn btn-primary" onclick="showToast('Profil berhasil diperbarui!','success')">Simpan Perubahan</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Ganti Password</div>
+        <div class="form-group"><label class="form-label">Password Lama</label><input class="form-control" type="password" placeholder="••••••••"></div>
+        <div class="form-group"><label class="form-label">Password Baru</label><input class="form-control" type="password" placeholder="••••••••"></div>
+        <div class="form-group"><label class="form-label">Konfirmasi Password Baru</label><input class="form-control" type="password" placeholder="••••••••"></div>
+        <button class="btn btn-primary" onclick="showToast('Password berhasil diubah!','success')">Ubah Password</button>
+        <div class="card" style="margin-top:20px;background:var(--teal-xpale);border-color:var(--teal-pale);">
+          <div class="card-title" style="font-size:0.9rem;">Preferensi Notifikasi</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:0.87rem;border-bottom:1px solid var(--border-light);">
+            <span>Notifikasi WhatsApp</span><input type="checkbox" checked>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:0.87rem;">
+            <span>Notifikasi Email</span><input type="checkbox" checked>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+  }
+});
+
+function saveRecord() {
+  closeModal('record-modal');
+  showToast('Data berhasil disimpan!', 'success');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `${type==='success'?'✓':type==='error'?'✗':'⚠'} ${message}`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+showPage('public');
+</script>
+</body>
+</html>
