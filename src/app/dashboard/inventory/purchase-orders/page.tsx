@@ -44,7 +44,7 @@ export default async function PurchaseOrdersPage() {
     .order('created_at', { ascending: false })
     .range(0, 99);
 
-  const orders = (data || []) as PurchaseOrder[];
+  const orders = (data || []) as unknown as PurchaseOrder[];
 
   return (
     <div className="space-y-6">

@@ -46,7 +46,7 @@ export function PaymentSettingsForm() {
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Payment Methods</h3>
           <div className="flex flex-wrap gap-4">
-            {['CASH', 'QRIS', 'TRANSFER', 'E_WALLET', 'CREDIT_CARD', 'DEBIT_CARD', 'GIFT_CARD', 'LOYALTY_POINTS'].map((method) => (
+            {(['CASH', 'QRIS', 'TRANSFER', 'E_WALLET', 'CREDIT_CARD', 'DEBIT_CARD', 'GIFT_CARD', 'LOYALTY_POINTS'] as const).map((method) => (
               <label key={method} className="flex items-center gap-2">
                 <input
                   type="checkbox"

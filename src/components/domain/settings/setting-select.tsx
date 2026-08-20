@@ -17,7 +17,7 @@ export function SettingSelect({ id, label, value, onChange, description, options
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium">{label}</Label>
       {description && <p className="text-sm text-muted-foreground">{description}</p>}
-      <Select id={id} value={value} onChange={onChange}>
+      <Select value={value} onValueChange={(value) => onChange(value ?? '')}>
         <SelectTrigger>
           <SelectValue placeholder="Select..." />
         </SelectTrigger>

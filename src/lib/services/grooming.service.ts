@@ -9,7 +9,7 @@ export class GroomingService {
     return data;
   }
 
-  static async listBookings(params: { page?: number; limit?: number; branch_id?: string; status?: string }) {
+  static async listBookings(params: { page?: number; limit?: number; branch_id?: string; status?: string; search?: string }) {
     const supabase = await createSupabaseClient();
     const { page = 1, limit = 20, branch_id, status } = params;
     let query = supabase.from('grooming_bookings').select('*', { count: 'exact' }).order('appointment_date', { ascending: false }).range((page - 1) * limit, page * limit - 1);

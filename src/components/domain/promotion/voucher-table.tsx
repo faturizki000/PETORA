@@ -61,7 +61,7 @@ export function VoucherTable() {
                 <TableRow key={voucher.id}>
                   <TableCell className="font-medium">{voucher.code}</TableCell>
                   <TableCell>{voucher.name}</TableCell>
-                  <TableCell>{voucher.discount_type === 'percentage' ? `${voucher.discount_value}%` : `Rp ${voucher.discount_value.toLocaleString()}`}</TableCell>
+                  <TableCell>{voucher.discount_type === 'PERCENTAGE' ? `${voucher.discount_value}%` : `Rp ${voucher.discount_value.toLocaleString()}`}</TableCell>
                   <TableCell>{voucher.usage_count} / {voucher.usage_limit || '∞'}</TableCell>
                   <TableCell>
                     <Badge className={voucher.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>

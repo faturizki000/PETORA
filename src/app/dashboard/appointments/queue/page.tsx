@@ -5,7 +5,7 @@ import { AppointmentService } from '@/lib/services/appointment.service';
 import { AppointmentQueue } from '@/components/domain/appointment/appointment-queue';
 import { Card } from '@/components/ui/card';
 
-export function AppointmentQueuePage() {
+export default function AppointmentQueuePage() {
   const today = new Date().toISOString().split('T')[0];
 
   const { data, isLoading } = useQuery({

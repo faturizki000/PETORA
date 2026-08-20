@@ -68,7 +68,7 @@ export function PromotionTable() {
                 <TableRow key={promo.id}>
                   <TableCell className="font-medium">{promo.name}</TableCell>
                   <TableCell>{promo.code}</TableCell>
-                  <TableCell>{promo.discount_type === 'percentage' ? `${promo.discount_value}%` : `Rp ${promo.discount_value.toLocaleString()}`}</TableCell>
+                  <TableCell>{promo.discount_type === 'PERCENTAGE' ? `${promo.discount_value}%` : `Rp ${promo.discount_value.toLocaleString()}`}</TableCell>
                   <TableCell>
                     <Badge className={statusColors[promo.is_active ? 'ACTIVE' : 'INACTIVE']}>{promo.is_active ? 'Active' : 'Inactive'}</Badge>
                   </TableCell>
