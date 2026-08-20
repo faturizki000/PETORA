@@ -15,7 +15,7 @@ import { Avatar } from '@/components/ui/avatar';
 export function UserMenu() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button variant="ghost" className="gap-2">
           <Avatar className="h-8 w-8" />
           <span className="hidden sm:inline">Admin</span>

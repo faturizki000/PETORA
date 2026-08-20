@@ -1,5 +1,5 @@
 import { createSupabaseClient } from '@/lib/supabase/server';
-import type { Setting, SettingCategory, StoreSettings, PaymentSettings } from '@/types';
+import type { Setting, SettingCategory } from '@/types';
 import { DEFAULT_SETTINGS } from '@/lib/constants/default-settings';
 
 export class SettingsService {
@@ -32,8 +32,11 @@ export class SettingsService {
       .eq('key', key)
       .maybeSingle();
     if (error) throw error;
-    if (!data && DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS]) {
-      return DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS].value as T;
+    if (!data) {
+      const defaultSetting = DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS];
+      if (defaultSetting) {
+        return defaultSetting.value as T;
+      }
     }
     return data?.value as T;
   }
@@ -45,10 +48,11 @@ export class SettingsService {
       .select('key, value')
       .eq('is_public', true);
     if (error) throw error;
-    return data.reduce((acc, item) => {
-      acc[item.key] = item.value;
-      return acc;
-    }, {} as Record<string, any>);
+    const result: Record<string, any> = {};
+    for (const item of data ?? []) {
+      result[item.key] = item.value;
+    }
+    return result;
   }
 
   static async update(key: string, value: any, updatedBy: string): Promise<void> {

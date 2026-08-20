@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createAppointmentSchema } from '@/schemas/appointment';
 import { createAppointmentAction } from '@/app/actions/appointment.actions';
-import { useToast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,7 +30,6 @@ const appointmentTypeOptions = [
 export function AppointmentForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

@@ -2,12 +2,11 @@
 import { revalidatePath } from 'next/cache';
 import { createSupabaseClient } from '@/lib/supabase/server';
 import { storeSettingsSchema, paymentSettingsSchema, updateSettingsBatchSchema } from '@/schemas/settings';
-import type { StoreSettings, PaymentSettings } from '@/types/settings';
 import type { ActionResponse } from '@/types/base';
 
 export async function updateStoreSettingsAction(
   input: unknown
-): Promise<ActionResponse<StoreSettings>> {
+): Promise<ActionResponse> {
   const supabase = await createSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -35,7 +34,7 @@ export async function updateStoreSettingsAction(
 
 export async function updatePaymentSettingsAction(
   input: unknown
-): Promise<ActionResponse<PaymentSettings>> {
+): Promise<ActionResponse> {
   const supabase = await createSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -78,7 +77,7 @@ export async function updateSettingsBatchAction(
     updated_by: user.id,
   }));
   const { error } = await supabase.from('settings').upsert(settingsEntries, {
-    onConflict: 'category,key',
+    onConflict: 'key',
   });
   if (error) {
     return { success: false, error: 'SETTINGS_ERROR', message: error.message };

@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createRoomSchema } from '@/schemas/pet-hotel';
 import { createRoomAction } from '@/app/actions/pet-hotel.actions';
-import { useToast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,7 +28,6 @@ const statusOptions = [
 export function RoomForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

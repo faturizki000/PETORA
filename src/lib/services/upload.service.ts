@@ -14,8 +14,9 @@ export class UploadService {
     if (error) throw error;
   }
 
-  static getPublicUrl(bucket: string, path: string) {
-    const { data } = createSupabaseClient().storage.from(bucket).getPublicUrl(path);
+  static async getPublicUrl(bucket: string, path: string) {
+    const supabase = await createSupabaseClient();
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
     return data.publicUrl;
   }
 }

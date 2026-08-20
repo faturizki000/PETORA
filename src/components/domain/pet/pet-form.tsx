@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createPetSchema } from '@/schemas/pet';
 import { createPetAction } from '@/app/actions/pet.actions';
-import { useToast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,7 +27,6 @@ const genderOptions = [
 export function PetForm({ customerId, onSuccess }: { customerId?: string; onSuccess?: () => void }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

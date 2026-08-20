@@ -17,7 +17,7 @@ export function BranchSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button variant="ghost" className="gap-2">
           <span className="hidden sm:inline">{currentBranchId ? 'Cabang Utama' : 'Pilih Cabang'}</span>
           <ChevronDown className="h-4 w-4" />

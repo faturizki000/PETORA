@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createMedicalRecordAction } from '@/app/actions/medical-record.actions';
-import { useToast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,7 +39,6 @@ type FormValues = z.infer<typeof formSchema>;
 export function MedicalRecordForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

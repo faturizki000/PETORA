@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createGroomingBookingSchema } from '@/schemas/grooming';
 import { createGroomingBookingAction } from '@/app/actions/grooming.actions';
-import { useToast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,7 +28,6 @@ const statusOptions = [
 export function GroomingBookingForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

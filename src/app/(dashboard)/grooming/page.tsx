@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { GroomingDashboardClient } from '@/components/domain/grooming/grooming-dashboard';
+import { GroomingDashboard } from '@/components/domain/grooming/grooming-dashboard';
 
 export default function GroomingPage() {
   return (
