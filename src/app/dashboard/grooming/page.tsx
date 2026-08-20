@@ -9,7 +9,7 @@ export default function GroomingPage() {
         <p className="text-muted-foreground">Kelola layanan grooming</p>
       </div>
       <Suspense fallback={<div>Loading grooming...</div>}>
-        <GroomingDashboardClient />
+        <GroomingDashboard />
       </Suspense>
     </div>
   );

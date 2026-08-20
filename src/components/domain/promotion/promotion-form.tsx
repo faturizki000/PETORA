@@ -25,7 +25,7 @@ const promotionFormSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-type FormValues = z.infer<typeof promotionFormSchema>;
+type FormValues = z.input<typeof promotionFormSchema>;
 
 const discountTypeOptions = [
   { value: 'percentage', label: 'Percentage' },

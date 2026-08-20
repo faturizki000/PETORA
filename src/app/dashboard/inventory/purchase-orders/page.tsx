@@ -40,7 +40,7 @@ export default async function PurchaseOrdersPage() {
   const supabase = await createSupabaseClient();
   const { data, error } = await supabase
     .from('purchase_orders')
-    .select('id, po_number, supplier_id, suppliers(name), status, total_amount, paid_amount, currency, created_at, created_by')
+    .select('id, po_number, supplier_id, suppliers(name), status, total_amount, paid_amount, currency, created_at, updated_at, created_by')
     .order('created_at', { ascending: false })
     .range(0, 99);
 

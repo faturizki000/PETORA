@@ -1,12 +1,13 @@
 'use server';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 import { createSupabaseClient } from '@/lib/supabase/server';
 import { storeSettingsSchema, paymentSettingsSchema, updateSettingsBatchSchema } from '@/schemas/settings';
 import type { ActionResponse } from '@/types/base';
 
 export async function updateStoreSettingsAction(
   input: unknown
-): Promise<ActionResponse> {
+): Promise<ActionResponse<z.infer<typeof storeSettingsSchema>>> {
   const supabase = await createSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -34,7 +35,7 @@ export async function updateStoreSettingsAction(
 
 export async function updatePaymentSettingsAction(
   input: unknown
-): Promise<ActionResponse> {
+): Promise<ActionResponse<z.infer<typeof paymentSettingsSchema>>> {
   const supabase = await createSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {

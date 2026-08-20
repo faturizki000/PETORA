@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Petora — Sistem Manajemen Terpadu Petshop & Petcare
 
-## Getting Started
+Sistem manajemen all-in-one untuk bisnis Petshop & Petcare di Indonesia. Mengintegrasikan seluruh operasional bisnis dalam satu platform modern, owner-configurable, dan siap multi-cabang.
 
-First, run the development server:
+## Tech Stack
+
+- **Frontend:** Next.js 16 + TypeScript + Tailwind CSS v4 + shadcn/ui
+- **Backend:** Supabase (PostgreSQL + Auth + RLS + Storage + Realtime)
+- **State:** Zustand + TanStack Query v5
+- **Forms:** React Hook Form + Zod
+- **Deploy:** Vercel
+
+## Features
+
+- Customer & Pet Management
+- Appointment & Queue System
+- Medical Records & Prescriptions
+- Pet Hotel & Grooming
+- POS & Invoicing
+- Inventory Management
+- Payment System (Manual + Gateway)
+- Loyalty Program & Promotions
+- Multi-branch Support
+- Customer Portal & Self-Service Kiosk
+- Telemedicine
+- Delivery Management
+- Subscription Plans
+- Employee Commissions
+- Marketing Campaigns
+
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env.local
+
+# Setup shadcn/ui
+npx shadcn@latest init --defaults --force
+npx shadcn@latest add button card input ...
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Database Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Start Supabase locally
+supabase start
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Run migrations
+supabase db push
 
-## Learn More
+# Seed default data
+npm run seed
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Login, forgot-password
+│   ├── (dashboard)/       # Staff dashboard
+│   ├── (portal)/          # Customer portal
+│   ├── (kiosk)/           # Self-service kiosk
+│   ├── actions/           # Server Actions
+│   └── api/               # Webhooks
+├── components/
+│   ├── ui/                # shadcn/ui components
+│   ├── shared/            # Reusable components
+│   ├── domain/            # Feature-specific components
+│   └── layout/            # Layout components
+├── lib/
+│   ├── supabase/          # Supabase clients
+│   ├── services/          # Domain services
+│   ├── utils/             # Utilities
+│   └── constants/         # Default settings
+├── hooks/                 # Custom React hooks
+├── stores/                # Zustand stores
+├── types/                 # TypeScript types
+├── schemas/               # Zod schemas
+└── messages/              # i18n translations
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+```bash
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Lint code
+npm run seed         # Seed database
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `.env.example` for required variables.
+
+## License
+
+Private - Petora Development Team

@@ -93,7 +93,7 @@ export class SettingsService {
       key,
       value: config.value,
       description: config.description,
-      is_public: config.is_public ?? false,
+      is_public: (config as any).is_public ?? false,
     }));
     const { error } = await supabase.from('settings').insert(defaults);
     if (error) throw error;

@@ -21,7 +21,7 @@ const sessionFormSchema = z.object({
   fee: z.number().nonnegative().optional(),
 });
 
-type FormValues = z.infer<typeof sessionFormSchema>;
+type FormValues = z.input<typeof sessionFormSchema>;
 
 export function SessionForm({ onSuccess }: { onSuccess?: () => void }) {
   const form = useForm<FormValues>({

@@ -37,7 +37,7 @@ export default async function StockMovementsPage() {
   const supabase = await createSupabaseClient();
   const { data, error } = await supabase
     .from('stock_movements')
-    .select('id, product_id, products(name), type, quantity, reference, notes, created_at, created_by')
+    .select('id, product_id, products(name), type, quantity, reference, notes, created_at, updated_at, user_id, created_by')
     .order('created_at', { ascending: false })
     .range(0, 99);
 

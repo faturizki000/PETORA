@@ -20,7 +20,7 @@ const planFormSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-type FormValues = z.infer<typeof planFormSchema>;
+type FormValues = z.input<typeof planFormSchema>;
 
 export function PlanForm({ plan, onSuccess }: { plan?: Record<string, unknown>; onSuccess?: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -16,7 +16,7 @@ import { Card } from '@/components/ui/card';
 
 const formSchema = createPetHotelBookingSchema;
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.input<typeof formSchema>;
 
 const statusOptions = [
   { value: 'PENDING', label: 'Pending' },

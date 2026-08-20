@@ -14,7 +14,7 @@ import { Select } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
 
-type FormValues = z.infer<typeof createSubscriptionSchema>;
+type FormValues = z.input<typeof createSubscriptionSchema>;
 
 const statusOptions = [
   { value: 'ACTIVE', label: 'Active' },

@@ -16,7 +16,7 @@ import { Card } from '@/components/ui/card';
 
 const formSchema = createAppointmentSchema;
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.input<typeof createAppointmentSchema>;
 
 const appointmentTypeOptions = [
   { value: 'consultation', label: 'Consultation' },

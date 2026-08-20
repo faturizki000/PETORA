@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 
-type FormValues = z.infer<typeof storeSettingsSchema>;
+type FormValues = z.input<typeof storeSettingsSchema>;
 
 export function StoreSettingsForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);

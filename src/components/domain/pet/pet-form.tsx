@@ -16,7 +16,7 @@ import { Card } from '@/components/ui/card';
 
 const formSchema = createPetSchema;
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.input<typeof formSchema>;
 
 const genderOptions = [
   { value: 'male', label: 'Male' },
@@ -36,7 +36,7 @@ export function PetForm({ customerId, onSuccess }: { customerId?: string; onSucc
       species: '',
       breed: '',
       birth_date: '',
-      gender: '',
+      gender: undefined,
       color: '',
       photo_url: '',
       microchip_number: '',

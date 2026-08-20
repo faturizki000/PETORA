@@ -3,8 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { createCustomerSchema } from '@/schemas/customer';
-import { createCustomerAction } from '@/app/actions/customer.actions';
+import { createCustomerAction, updateCustomerAction } from '@/app/actions/customer.actions';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,11 +32,12 @@ const genderOptions = [
 ];
 
 interface CustomerFormProps {
+  id?: string;
   customer?: Partial<FormValues>;
   onSuccess?: () => void;
 }
 
-export function CustomerForm({ customer, onSuccess }: CustomerFormProps) {
+export function CustomerForm({ id, customer, onSuccess }: CustomerFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -56,7 +58,7 @@ export function CustomerForm({ customer, onSuccess }: CustomerFormProps) {
       custom_fields: customer?.custom_fields || {},
       referred_by: customer?.referred_by || '',
       birth_date: customer?.birth_date || '',
-      gender: customer?.gender || '',
+      gender: customer?.gender,
       id_number: customer?.id_number || '',
       create_account: customer?.create_account || false,
       username: customer?.username || '',
@@ -67,12 +69,14 @@ export function CustomerForm({ customer, onSuccess }: CustomerFormProps) {
   async function onSubmit(data: FormValues) {
     setIsSubmitting(true);
     try {
-      const result = await createCustomerAction(data);
+      const result = id
+        ? await updateCustomerAction(id, data)
+        : await createCustomerAction(data);
       setIsSubmitting(false);
       if (result.success) {
-        toast.success(customer ? 'Customer updated successfully' : 'Customer created successfully');
+        toast.success(id ? 'Customer updated successfully' : 'Customer created successfully');
         onSuccess?.();
-        if (!customer) {
+        if (!id) {
           router.push('/dashboard/customers');
         }
       } else {

@@ -16,7 +16,7 @@ import { Card } from '@/components/ui/card';
 
 const formSchema = createRoomSchema;
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.input<typeof formSchema>;
 
 const statusOptions = [
   { value: 'AVAILABLE', label: 'Available' },

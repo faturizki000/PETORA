@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 
-type FormValues = z.infer<typeof manualPaymentSchema>;
+type FormValues = z.input<typeof manualPaymentSchema>;
 
 export function PaymentForm({
   invoiceId,

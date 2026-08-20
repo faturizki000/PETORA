@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 
-type FormValues = z.infer<typeof createExpenseSchema>;
+type FormValues = z.input<typeof createExpenseSchema>;
 
 export function ExpenseForm({ onSuccess }: { onSuccess?: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);

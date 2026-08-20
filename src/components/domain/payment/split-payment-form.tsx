@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Trash2, Plus } from 'lucide-react';
 
-type FormValues = z.infer<typeof splitPaymentSchema>;
+type FormValues = z.input<typeof splitPaymentSchema>;
 type PaymentMethodLiteral = FormValues['payments'][number]['payment_method'];
 
 export function SplitPaymentForm({

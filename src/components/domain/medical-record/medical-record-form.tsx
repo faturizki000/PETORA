@@ -34,7 +34,7 @@ const formSchema = z.object({
   status: z.enum(['OPEN', 'CLOSED']).default('OPEN'),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.input<typeof formSchema>;
 
 export function MedicalRecordForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();

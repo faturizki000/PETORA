@@ -27,7 +27,7 @@ const employeeFormSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-type FormValues = z.infer<typeof employeeFormSchema>;
+type FormValues = z.input<typeof employeeFormSchema>;
 
 const roleOptions = [
   { value: 'OWNER', label: 'Owner' },

@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
 
-type FormValues = z.infer<typeof paymentSettingsSchema>;
+type FormValues = z.input<typeof paymentSettingsSchema>;
 
 export function PaymentSettingsForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);

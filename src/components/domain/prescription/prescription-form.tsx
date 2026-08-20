@@ -27,7 +27,7 @@ const formSchema = z.object({
   valid_until: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.input<typeof formSchema>;
 
 const statusOptions = [
   { value: 'DRAFT', label: 'Draft' },

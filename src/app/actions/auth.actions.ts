@@ -2,12 +2,13 @@
 import bcrypt from 'bcryptjs';
 import { revalidatePath } from 'next/cache';
 import { createSupabaseClient } from '@/lib/supabase/server';
+import type { User } from '@supabase/supabase-js';
 import type { ActionResponse } from '@/types/base';
 
 export async function loginAction(
   email: string,
   password: string
-): Promise<ActionResponse> {
+): Promise<ActionResponse<{ user: User }>> {
   const supabase = await createSupabaseClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -17,7 +18,7 @@ export async function loginAction(
     return { success: false, error: 'AUTH_ERROR', message: 'Invalid credentials' };
   }
   revalidatePath('/dashboard');
-  return { success: true, data: data.user };
+  return { success: true, data: { user: data.user } };
 }
 
 export async function logoutAction(): Promise<ActionResponse> {
@@ -51,14 +52,20 @@ export async function updatePinAction(
   return { success: true };
 }
 
+interface VerifiedUser {
+  id: string;
+  username: string;
+  role: string;
+}
+
 export async function verifyPinAction(
   username: string,
   pin: string
-): Promise<ActionResponse<{ user: any }>> {
+): Promise<ActionResponse<VerifiedUser>> {
   const supabase = await createSupabaseClient();
   const { data: user, error } = await supabase
     .from('users')
-    .select('*')
+    .select('id, username, role, pin_hash')
     .eq('username', username)
     .single();
 
@@ -71,5 +78,8 @@ export async function verifyPinAction(
     return { success: false, error: 'AUTH_ERROR', message: 'Invalid credentials' };
   }
 
-  return { success: true, data: user };
+  return {
+    success: true,
+    data: { id: user.id, username: user.username, role: user.role },
+  };
 }

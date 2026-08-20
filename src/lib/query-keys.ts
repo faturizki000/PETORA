@@ -1,13 +1,13 @@
 export const queryKeys = {
   settings: {
     all: ['settings'] as const,
-    byCategory: ((category: string) => ['settings', category]) as const,
-    key: ((key: string) => ['settings', 'key', key]) as const,
+    byCategory: (category: string) => ['settings', category] as const,
+    key: (key: string) => ['settings', 'key', key] as const,
     public: ['settings', 'public'] as const,
   },
   payments: {
     all: ['payments'] as const,
-    byInvoice: ((invoiceId: string) => ['payments', invoiceId]) as const,
+    byInvoice: (invoiceId: string) => ['payments', invoiceId] as const,
     pending: ['payments', 'pending'] as const,
   },
   customers: {
@@ -59,4 +59,4 @@ export const queryKeys = {
     all: ['branches'] as const,
     current: ['branches', 'current'] as const,
   },
-} as const;
+};

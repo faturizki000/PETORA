@@ -1,6 +1,6 @@
 'use client';
 
-import { Select } from '@/components/ui/select';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 
 interface SettingSelectProps {
@@ -17,10 +17,15 @@ export function SettingSelect({ id, label, value, onChange, description, options
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium">{label}</Label>
       {description && <p className="text-sm text-muted-foreground">{description}</p>}
-      <Select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>{option.label}</option>
-        ))}
+      <Select id={id} value={value} onChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select..." />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+          ))}
+        </SelectContent>
       </Select>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Cat, Dog, Bird, Fish, Rabbit, Other } from 'lucide-react';
+import { Cat, Dog, Bird, Fish, Rabbit, HelpCircle } from 'lucide-react';
 import type { Pet } from '@/types/pet';
 
 const speciesIcons: Record<string, React.ElementType> = {
@@ -14,7 +14,7 @@ const speciesIcons: Record<string, React.ElementType> = {
 };
 
 export function PetCard({ pet }: { pet: Pet }) {
-  const Icon = speciesIcons[pet.species.toLowerCase()] || Other;
+  const Icon = speciesIcons[pet.species.toLowerCase()] || HelpCircle;
 
   return (
     <Card className="p-6">

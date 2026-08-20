@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useLocalStorage } from 'usehooks-ts';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 
 const widgets = [
@@ -9,12 +8,30 @@ const widgets = [
   'revenue-chart',
   'low-stock',
   'pending-payments',
-];
+] as const;
+
+type Widget = typeof widgets[number];
 
 export function DashboardWidgets() {
-  const [activeWidgets, setActiveWidgets] = useLocalStorage('dashboard-widgets', widgets);
+  const [activeWidgets, setActiveWidgets] = useState<Widget[]>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('dashboard-widgets');
+      if (stored) {
+        try {
+          return JSON.parse(stored) as Widget[];
+        } catch {
+          return [...widgets];
+        }
+      }
+    }
+    return [...widgets];
+  });
 
-  const toggleWidget = (widget: string) => {
+  useEffect(() => {
+    localStorage.setItem('dashboard-widgets', JSON.stringify(activeWidgets));
+  }, [activeWidgets]);
+
+  const toggleWidget = (widget: Widget) => {
     setActiveWidgets((prev) =>
       prev.includes(widget) ? prev.filter((w) => w !== widget) : [...prev, widget]
     );

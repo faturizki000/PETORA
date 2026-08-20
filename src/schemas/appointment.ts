@@ -9,9 +9,9 @@ export const createAppointmentSchema = z.object({
   doctor_id: uuidSchema.nullable().optional(),
   appointment_date: dateSchema,
   appointment_time: z.string().regex(/^\d{2}:\d{2}$/),
-  duration_minutes: z.number().int().positive().default(30),
+  duration_minutes: z.number().int().positive(),
   appointment_type: z.enum(['consultation', 'vaccination', 'grooming', 'surgery', 'checkup', 'emergency']).optional(),
   complaint: z.string().optional(),
   notes: z.string().optional(),
-  is_from_portal: z.boolean().default(false),
+  is_from_portal: z.boolean(),
 });
