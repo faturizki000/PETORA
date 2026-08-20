@@ -1,5 +1,6 @@
 import { createSupabaseClient } from '@/lib/supabase/server';
-import type { Invoice, PaginatedResponse, CreateInvoiceInput } from '@/types';
+import type { Invoice, CreateInvoiceInput, PaginatedResponse } from '@/types';
+import type { InvoiceItem } from '@/types/invoice';
 
 export class InvoiceService {
   static async list(params: {
@@ -45,6 +46,28 @@ export class InvoiceService {
       .select('*')
       .eq('id', id)
       .single();
+    if (error) return null;
+    return data as Invoice;
+  }
+
+  static async getItems(invoiceId: string): Promise<InvoiceItem[]> {
+    const supabase = await createSupabaseClient();
+    const { data, error } = await supabase
+      .from('invoice_items')
+      .select('*')
+      .eq('invoice_id', invoiceId)
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    return (data || []) as InvoiceItem[];
+  }
+
+  static async getByNumber(invoiceNumber: string): Promise<Invoice | null> {
+    const supabase = await createSupabaseClient();
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*')
+      .eq('invoice_number', invoiceNumber)
+      .maybeSingle();
     if (error) return null;
     return data as Invoice;
   }

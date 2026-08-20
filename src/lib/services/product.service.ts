@@ -26,9 +26,6 @@ export class ProductService {
     if (branch_id) query = query.eq('branch_id', branch_id);
     if (search) query = query.or(`name.ilike.%${search}%,sku.ilike.%${search}%,barcode.ilike.%${search}%`);
     if (category_id) query = query.eq('category_id', category_id);
-    if (low_stock) {
-      query = query.lte('stock_quantity', query.columns.reorder_point as any);
-    }
     if (expiring_soon) {
       const thirtyDaysFromNow = new Date();
       thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
@@ -38,8 +35,13 @@ export class ProductService {
     const { data, error, count } = await query;
     if (error) throw error;
 
+    let result = data as Product[];
+    if (low_stock) {
+      result = result.filter((product) => product.stock_quantity <= product.reorder_point);
+    }
+
     return {
-      data: data as Product[],
+      data: result,
       total: count ?? 0,
       page,
       limit,
@@ -53,14 +55,15 @@ export class ProductService {
       .from('products')
       .select('*')
       .eq('status', 'ACTIVE')
-      .is('deleted_at', null)
-      .lte('stock_quantity', supabase.rpc('get_reorder_point') as any);
+      .is('deleted_at', null);
 
     if (branch_id) query = query.eq('branch_id', branch_id);
 
     const { data, error } = await query;
     if (error) throw error;
-    return data as Product[];
+    return (data || []).filter(
+      (product) => product.stock_quantity <= product.reorder_point
+    ) as Product[];
   }
 
   static async getExpiringSoon(days: number = 30, branch_id?: string): Promise<Product[]> {
@@ -81,5 +84,39 @@ export class ProductService {
     const { data, error } = await query;
     if (error) throw error;
     return data as Product[];
+  }
+
+  static async getById(id: string): Promise<Product | null> {
+    const supabase = await createSupabaseClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .is('deleted_at', null)
+      .single();
+    if (error) return null;
+    return data as Product;
+  }
+
+  static async getCategories(): Promise<{ id: string; name: string; photo_url: string | null }[]> {
+    const supabase = await createSupabaseClient();
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name, photo_url')
+      .eq('is_active', true)
+      .order('name');
+    if (error) return [];
+    return (data || []) as { id: string; name: string; photo_url: string | null }[];
+  }
+
+  static async getSuppliers(): Promise<{ id: string; name: string }[]> {
+    const supabase = await createSupabaseClient();
+    const { data, error } = await supabase
+      .from('suppliers')
+      .select('id, name')
+      .eq('is_active', true)
+      .order('name');
+    if (error) return [];
+    return (data || []) as { id: string; name: string }[];
   }
 }
