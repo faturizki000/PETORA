@@ -1,7 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { createSupabaseClient } from '@/lib/supabase/server';
-import { createCustomerSchema, type CustomerTag } from '@/schemas/customer';
+import { createCustomerSchema } from '@/schemas/customer';
 import type { Customer } from '@/types/customer';
 import type { ActionResponse } from '@/types/base';
 

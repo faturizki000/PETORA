@@ -1,3 +1,6 @@
+import { BaseEntity, UUID, Timestamp } from './base';
+import { PaymentMethod } from './invoice';
+
 export interface Branch extends BaseEntity {
   name: string;
   code: string;
@@ -5,7 +8,7 @@ export interface Branch extends BaseEntity {
   phone: string | null;
   email: string | null;
   logo_url: string | null;
-  operating_hours: Record<string, any> | null;
+  operating_hours: Record<string, unknown> | null;
   is_active: boolean;
   is_headquarter: boolean;
 }
@@ -14,7 +17,7 @@ export interface Setting {
   id: UUID;
   category: string;
   key: string;
-  value: any;
+  value: unknown;
   description: string | null;
   is_public: boolean;
   updated_at: Timestamp;
@@ -57,7 +60,7 @@ export type PaymentSettings = {
   methods: PaymentMethod[];
   gateway_enabled: boolean;
   gateway_provider: string;
-  gateway_config: Record<string, any>;
+  gateway_config: Record<string, unknown>;
   manual_payment_instructions: {
     bank_name: string;
     account_number: string;

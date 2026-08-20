@@ -1,3 +1,6 @@
+import { BaseEntity, UUID } from './base';
+import { PaymentMethod } from './invoice';
+
 export type SubscriptionStatus = 'ACTIVE' | 'PAUSED' | 'CANCELLED' | 'EXPIRED';
 
 export interface Subscription extends BaseEntity {
@@ -19,6 +22,6 @@ export interface SubscriptionPlan extends BaseEntity {
   description: string | null;
   price: number;
   billing_cycle: string;
-  features: Record<string, any>;
+  features: Record<string, unknown>;
   is_active: boolean;
 }

@@ -1,10 +1,9 @@
 import { ProductService } from '@/lib/services/product.service';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tag, Weight, Ruler, CalendarDays, PackageCheck } from 'lucide-react';
-import type { Product } from '@/types/product';
+import { buttonVariants } from '@/components/ui/button';
+import { Tag, Weight, CalendarDays, PackageCheck } from 'lucide-react';
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,7 +20,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <p className="text-muted-foreground font-mono">{product.sku}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => {}}>Edit</Button>
+          <Link href={`/dashboard/products/${id}/edit`} className={buttonVariants({ variant: 'outline' })}>
+            Edit
+          </Link>
         </div>
       </div>
 

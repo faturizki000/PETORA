@@ -1,3 +1,5 @@
+import { BaseEntity, SoftDeletable, UUID } from './base';
+
 export interface Product extends SoftDeletable {
   branch_id: UUID | null;
   sku: string;
@@ -21,12 +23,12 @@ export interface Product extends SoftDeletable {
   batch_number: string | null;
   unit: string | null;
   weight_kg: number | null;
-  dimensions: Record<string, any> | null;
+  dimensions: Record<string, unknown> | null;
   is_serialized: boolean;
   is_batch_tracked: boolean;
   is_active: boolean;
   status: 'ACTIVE' | 'ARCHIVED';
-  custom_fields: Record<string, any>;
+  custom_fields: Record<string, unknown>;
 }
 
 export interface Category extends BaseEntity {

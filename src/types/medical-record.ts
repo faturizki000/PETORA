@@ -1,3 +1,5 @@
+import { SoftDeletable, UUID, Timestamp } from './base';
+
 export interface MedicalRecord extends SoftDeletable {
   record_number: string;
   branch_id: UUID | null;

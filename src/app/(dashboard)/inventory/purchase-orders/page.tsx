@@ -9,7 +9,7 @@ import {
   TableRow,
   TableCell,
 } from '@/components/ui/table';
-import { Plus, ShoppingCart, Package } from 'lucide-react';
+import { Plus, ShoppingCart } from 'lucide-react';
 import type { BaseEntity } from '@/types/base';
 
 interface SupplierRef { name: string; }

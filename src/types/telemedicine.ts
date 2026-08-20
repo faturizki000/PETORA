@@ -1,3 +1,5 @@
+import { BaseEntity, UUID, Timestamp } from './base';
+
 export type TelemedicineStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
 
 export interface TelemedicineSession extends BaseEntity {

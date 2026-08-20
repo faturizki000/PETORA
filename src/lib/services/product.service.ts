@@ -61,9 +61,9 @@ export class ProductService {
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []).filter(
+    return ((data || []) as Product[]).filter(
       (product) => product.stock_quantity <= product.reorder_point
-    ) as Product[];
+    );
   }
 
   static async getExpiringSoon(days: number = 30, branch_id?: string): Promise<Product[]> {

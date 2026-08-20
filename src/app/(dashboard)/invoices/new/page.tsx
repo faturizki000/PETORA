@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { InvoiceForm } from '@/components/domain/invoice/invoice-form';
 import { CustomerService } from '@/lib/services/customer.service';
 import { ProductService } from '@/lib/services/product.service';

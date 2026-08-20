@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray, useWatch, Controller, type Control } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch, Controller } from 'react-hook-form';
+import type { Control, UseFormSetValue } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
@@ -21,20 +22,9 @@ type CustomerOption = { id: string; name: string; phone: string | null };
 const lineItemSchema = invoiceItemSchema.extend({
   description: z.string().min(1, 'Description is required'),
 });
-type LineItem = z.infer<typeof lineItemSchema>;
+type LineItem = z.input<typeof lineItemSchema>;
 
-type InvoiceTypeValue = 'POS' | 'CLINICAL' | 'PET_HOTEL' | 'GROOMING' | 'MIXED' | 'SUBSCRIPTION' | 'TELEMEDICINE';
-
-type FormValues = {
-  invoice_type: InvoiceTypeValue;
-  customer_id: string;
-  notes: string;
-  due_date: string;
-  discount_amount: number;
-  tax_amount: number;
-  shipping_amount: number;
-  items: LineItem[];
-};
+type FormValues = z.input<typeof invoiceSchema>;
 
 const invoiceSchema = createInvoiceSchema
   .omit({ discount_type: true, promotion_id: true, gift_card_id: true, voucher_code: true, loyalty_points_to_redeem: true })
@@ -47,11 +37,13 @@ function LineItemInput({
   index,
   products,
   control,
+  setValue,
   remove,
 }: {
   index: number;
   products: ProductOption[];
   control: Control<FormValues>;
+  setValue: UseFormSetValue<FormValues>;
   remove: (index: number) => void;
 }) {
   return (
@@ -63,14 +55,17 @@ function LineItemInput({
           name={`items.${index}.product_id`}
           render={({ field }) => (
             <select
-              {...field}
+              name={field.name}
+              value={field.value ?? ''}
+              onBlur={field.onBlur}
+              ref={field.ref}
               className="h-9 w-full rounded-lg border border-input bg-transparent px-2 text-sm"
               onChange={(e) => {
                 const product = products.find((p) => p.id === e.target.value);
                 if (product) {
                   field.onChange(e.target.value);
-                  control.setValue(`items.${index}.unit_price`, product.selling_price, { shouldValidate: true });
-                  control.setValue(`items.${index}.description`, product.name, { shouldValidate: true });
+                  setValue(`items.${index}.unit_price`, product.selling_price, { shouldValidate: true });
+                  setValue(`items.${index}.description`, product.name, { shouldValidate: true });
                 }
               }}
             >
@@ -157,7 +152,7 @@ export function InvoiceForm({
   });
 
   function addItem() {
-    append({ description: '', quantity: 1, unit_price: 0, discount_amount: 0, tax_amount: 0 });
+     append({ item_type: 'product', description: '', quantity: 1, unit_price: 0, discount_amount: 0, tax_amount: 0 });
   }
 
   const watchedItems = useWatch({ control: form.control, name: 'items' }) as LineItem[];
@@ -182,8 +177,8 @@ export function InvoiceForm({
         unit_price: item.unit_price,
         discount_amount: item.discount_amount || 0,
         tax_amount: item.tax_amount || 0,
-        batch_number: item.batch_number || null,
-        expiry_date: item.expiry_date || null,
+        batch_number: item.batch_number || undefined,
+        expiry_date: item.expiry_date || undefined,
       })),
       discount_amount: discount,
       discount_type: 'fixed' as const,
@@ -260,6 +255,7 @@ export function InvoiceForm({
                 index={index}
                 products={products}
                 control={form.control}
+                setValue={form.setValue}
                 remove={remove}
               />
             ))}

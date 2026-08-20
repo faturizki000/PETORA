@@ -1,3 +1,5 @@
+import { SoftDeletable, UUID } from './base';
+
 export interface Pet extends SoftDeletable {
   customer_id: UUID;
   name: string;
@@ -13,7 +15,7 @@ export interface Pet extends SoftDeletable {
   special_needs: string | null;
   diet_notes: string | null;
   behavior_notes: string | null;
-  custom_fields: Record<string, any>;
+  custom_fields: Record<string, unknown>;
   is_neutered: boolean;
   is_active: boolean;
 }

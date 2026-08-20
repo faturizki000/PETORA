@@ -1,6 +1,7 @@
 import { ProductService } from '@/lib/services/product.service';
+import Link from 'next/link';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import {
   Table,
   TableHeader,
@@ -10,7 +11,6 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { PackageCheck, AlertTriangle, CalendarDays, TrendingUp } from 'lucide-react';
-import type { Product } from '@/types/product';
 
 function daysUntil(date: string | null): number | null {
   if (!date) return null;
@@ -70,9 +70,9 @@ export default async function InventoryDashboardPage() {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Low Stock Products</h3>
-          <Button variant="outline" size="sm" asChild>
-            <a href="/dashboard/inventory/stock-movements">View Stock Movements</a>
-          </Button>
+          <Link href="/dashboard/inventory/stock-movements" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
+            View Stock Movements
+          </Link>
         </div>
         <Table>
           <TableHeader>

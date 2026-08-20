@@ -32,7 +32,7 @@ export function PosLayout({
           <PosProductGrid
             products={products}
             selectedCategory={selectedCategory}
-            onAddItem={addItem}
+             onAddItem={(product) => addItem(product, 1)}
           />
         </div>
         <div className="lg:col-span-1">

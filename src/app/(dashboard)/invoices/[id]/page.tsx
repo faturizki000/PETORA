@@ -20,8 +20,9 @@ function formatCurrency(amount: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
 }
 
-async function cancelInvoice(invoiceId: string) {
+async function cancelInvoice(formData: FormData) {
   'use server';
+  const invoiceId = formData.get('invoice_id') as string;
   await cancelInvoiceAction(invoiceId);
   revalidatePath('/dashboard/invoices');
   revalidatePath(`/dashboard/invoices/${invoiceId}`);
@@ -61,7 +62,8 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         </div>
         <div className="flex gap-2">
           {canCancel && (
-            <form action={cancelInvoice.bind(null, invoice.id)}>
+            <form action={cancelInvoice}>
+              <input type="hidden" name="invoice_id" value={invoice.id} />
               <Button variant="outline" type="submit">Cancel Invoice</Button>
             </form>
           )}

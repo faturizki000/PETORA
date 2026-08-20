@@ -1,3 +1,5 @@
+import { BaseEntity, UUID, Timestamp } from './base';
+
 export type AppointmentStatus = 'SCHEDULED' | 'WAITING' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED' | 'NO_SHOW';
 
 export interface Appointment extends BaseEntity {

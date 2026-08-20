@@ -1,3 +1,5 @@
+import { BaseEntity, UUID, Timestamp } from './base';
+
 export type UserRole = 'OWNER' | 'ADMIN' | 'MANAGER' | 'DOKTER' | 'KASIR' | 'GROOMER' | 'COURIER' | 'CUSTOMER';
 
 export interface User extends BaseEntity {

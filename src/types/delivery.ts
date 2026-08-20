@@ -1,3 +1,5 @@
+import { BaseEntity, UUID, Timestamp } from './base';
+
 export type DeliveryStatus = 'PENDING' | 'ASSIGNED' | 'PICKED_UP' | 'IN_TRANSIT' | 'DELIVERED' | 'FAILED' | 'CANCELLED';
 
 export interface Delivery extends BaseEntity {

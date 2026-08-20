@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import type { Product } from '@/types/product';
 
-type FormValues = z.infer<typeof createProductSchema>;
+type FormValues = z.input<typeof createProductSchema>;
 
 const unitOptions = [
   { value: 'pcs', label: 'Pieces (pcs)' },

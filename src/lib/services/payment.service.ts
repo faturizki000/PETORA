@@ -37,7 +37,7 @@ export class PaymentService {
       .eq('id', invoiceId)
       .single();
 
-    const total_paid = payments?.reduce((sum, p) => sum + p.amount, 0) ?? 0;
+    const total_paid = payments?.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0) ?? 0;
     const total_amount = invoice?.total_amount ?? 0;
 
     let status: 'UNPAID' | 'PARTIAL_PAYMENT' | 'PAID' = 'UNPAID';

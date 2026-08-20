@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { splitPaymentSchema } from '@/schemas/payment';
 import { splitPaymentAction } from '@/app/actions/payment.actions';
 import { PaymentMethodSelector } from '@/components/domain/payment/payment-method-selector';
 import { Label } from '@/components/ui/label';
@@ -12,13 +13,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Trash2, Plus } from 'lucide-react';
-import type { PaymentMethod } from '@/types/invoice';
 
-type MethodPayment = {
-  payment_method: PaymentMethod;
-  amount: number;
-  reference_number?: string;
-};
+type FormValues = z.infer<typeof splitPaymentSchema>;
+type PaymentMethodLiteral = FormValues['payments'][number]['payment_method'];
 
 export function SplitPaymentForm({
   invoiceId,
@@ -31,39 +28,26 @@ export function SplitPaymentForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<{ payments: MethodPayment[] }>({
-    resolver: zodResolver(
-      z.object({
-        payments: z
-          .array(
-            z.object({
-              payment_method: z.enum([
-                'CASH', 'QRIS', 'TRANSFER', 'E_WALLET', 'DEBIT_CARD', 'CREDIT_CARD', 'GIFT_CARD', 'LOYALTY_POINTS',
-              ]),
-              amount: z.number().positive(),
-              reference_number: z.string().optional(),
-            })
-          )
-          .min(2, 'Add at least two payments'),
-      })
-    ),
+  const form = useForm<FormValues>({
+    resolver: zodResolver(splitPaymentSchema),
     defaultValues: {
+      invoice_id: invoiceId,
       payments: [
-        { payment_method: 'CASH' as PaymentMethod, amount: totalAmount / 2 },
-        { payment_method: 'QRIS' as PaymentMethod, amount: totalAmount / 2 },
+        { payment_method: 'CASH' as PaymentMethodLiteral, amount: totalAmount / 2 },
+        { payment_method: 'QRIS' as PaymentMethodLiteral, amount: totalAmount / 2 },
       ],
     },
   });
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'payments' });
-  const watched = useWatch({ control: form.control, name: 'payments' }) as Array<{ payment_method: PaymentMethod; amount: number }>;
+  const watched = useWatch({ control: form.control, name: 'payments' });
   const totalEntered = watched.reduce((sum, p) => sum + (p.amount || 0), 0);
 
   function addPayment() {
-    append({ payment_method: 'CASH' as PaymentMethod, amount: 0, reference_number: '' });
+    append({ payment_method: 'CASH' as PaymentMethodLiteral, amount: 0, reference_number: '' });
   }
 
-  async function onSubmit(data: { payments: MethodPayment[] }) {
+  async function onSubmit(data: FormValues) {
     const sum = data.payments.reduce((s, p) => s + p.amount, 0);
     if (Math.abs(sum - totalAmount) > 0.01) {
       toast.error(`Total split payments (${sum}) must equal ${totalAmount}`);
@@ -103,7 +87,7 @@ export function SplitPaymentForm({
               <div className="col-span-5">
                 <PaymentMethodSelector
                   value={watched[index]?.payment_method || 'CASH'}
-                  onChange={(m) => form.setValue(`payments.${index}.payment_method`, m)}
+                  onChange={(m) => form.setValue(`payments.${index}.payment_method`, m as PaymentMethodLiteral)}
                 />
               </div>
               <div className="col-span-3 space-y-1">
@@ -140,4 +124,3 @@ export function SplitPaymentForm({
     </Card>
   );
 }
-

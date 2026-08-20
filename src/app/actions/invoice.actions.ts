@@ -1,8 +1,8 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { createSupabaseClient } from '@/lib/supabase/server';
-import { createInvoiceSchema, invoiceItemSchema } from '@/schemas/invoice';
-import type { Invoice, InvoiceItem } from '@/types/invoice';
+import { createInvoiceSchema } from '@/schemas/invoice';
+import type { Invoice } from '@/types/invoice';
 import type { ActionResponse } from '@/types/base';
 
 export async function createInvoiceAction(
@@ -38,7 +38,7 @@ export async function createInvoiceAction(
   if (invoiceError || !invoice) {
     return { success: false, error: 'DB_ERROR', message: invoiceError?.message };
   }
-  const invoiceItems = items.map((item: InvoiceItem) => ({
+  const invoiceItems = items.map((item) => ({
     ...item,
     invoice_id: invoice.id,
     total_price: item.quantity * item.unit_price - item.discount_amount + item.tax_amount,

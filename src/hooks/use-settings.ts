@@ -6,7 +6,7 @@ import {
   updatePaymentSettingsAction,
   updateSettingsBatchAction,
 } from '@/app/actions/settings.actions';
-import type { StoreSettingsInput, PaymentSettingsInput } from '@/types';
+import type { SettingCategory, StoreSettingsInput, PaymentSettingsInput } from '@/types';
 
 export function useSettings() {
   return useQuery({
@@ -16,7 +16,7 @@ export function useSettings() {
   });
 }
 
-export function useSettingsByCategory(category: string) {
+export function useSettingsByCategory(category: SettingCategory) {
   return useQuery({
     queryKey: queryKeys.settings.byCategory(category),
     queryFn: () => SettingsService.getByCategory(category),
@@ -62,7 +62,7 @@ export function useUpdatePaymentSettings() {
 export function useUpdateSettingsBatch() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (updates: Array<{ key: string; value: any }>) =>
+     mutationFn: (updates: Array<{ key: string; value: unknown }>) =>
       updateSettingsBatchAction({ updates }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.settings.all });

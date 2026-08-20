@@ -49,7 +49,10 @@ export function PaymentForm({
       return;
     }
     setIsSubmitting(true);
-    const result = await recordManualPaymentAction(data);
+    const result = await recordManualPaymentAction({
+      ...data,
+      proof_url: data.proof_url || undefined,
+    });
     setIsSubmitting(false);
     if (result.success) {
       toast.success('Payment recorded successfully');
@@ -68,7 +71,7 @@ export function PaymentForm({
           <Label>Payment Method</Label>
               <PaymentMethodSelector
                 value={paymentMethod}
-                onChange={(m) => form.setValue('payment_method', m)}
+                onChange={(m) => form.setValue('payment_method', m as FormValues['payment_method'])}
               />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

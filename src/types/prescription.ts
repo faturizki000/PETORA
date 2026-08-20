@@ -1,3 +1,5 @@
+import { BaseEntity, UUID, Timestamp } from './base';
+
 export interface Prescription extends BaseEntity {
   prescription_number: string;
   medical_record_id: UUID;

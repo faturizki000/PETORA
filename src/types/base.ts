@@ -24,5 +24,5 @@ export interface ActionResponse<T = void> {
   data?: T;
   error?: 'VALIDATION_ERROR' | 'DB_ERROR' | 'AUTH_ERROR' | 'FORBIDDEN' | 'NOT_FOUND' | 'SETTINGS_ERROR' | 'PAYMENT_ERROR' | 'UNKNOWN';
   message?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }

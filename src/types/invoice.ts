@@ -1,3 +1,5 @@
+import { BaseEntity, UUID, Timestamp } from './base';
+
 export type InvoiceType = 'POS' | 'CLINICAL' | 'PET_HOTEL' | 'GROOMING' | 'MIXED' | 'SUBSCRIPTION' | 'TELEMEDICINE';
 export type InvoiceStatus = 'DRAFT' | 'UNPAID' | 'PARTIAL_PAYMENT' | 'PAID' | 'CANCELLED' | 'REFUNDED';
 export type PaymentMethod = 'CASH' | 'QRIS' | 'TRANSFER' | 'E_WALLET' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'GIFT_CARD' | 'LOYALTY_POINTS' | 'MIXED' | 'OTHER';
@@ -52,7 +54,7 @@ export interface Payment extends BaseEntity {
   proof_url: string | null;
   reference_number: string | null;
   gateway_transaction_id: string | null;
-  gateway_response: Record<string, any> | null;
+  gateway_response: Record<string, unknown> | null;
   gift_card_id: UUID | null;
   notes: string | null;
   verified_by: UUID | null;

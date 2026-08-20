@@ -1,3 +1,5 @@
+import { SoftDeletable, UUID } from './base';
+
 export type CustomerTag = 'VIP' | 'REGULAR' | 'NEW' | 'BLACKLIST' | 'WHOLESALE' | 'BREEDER';
 
 export interface Customer extends SoftDeletable {
@@ -14,7 +16,7 @@ export interface Customer extends SoftDeletable {
   notes: string | null;
   is_guest: boolean;
   tags: CustomerTag[];
-  custom_fields: Record<string, any>;
+  custom_fields: Record<string, unknown>;
   referred_by: UUID | null;
   referral_code: string | null;
   birth_date: string | null;
